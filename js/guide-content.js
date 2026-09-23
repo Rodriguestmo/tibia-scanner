@@ -140,9 +140,13 @@
       { icon: "metadata", title: "Tipos de evidência", blocks: [
         { ev: [
           ["relog", "Correlação temporal", "A desloga e B loga em até 30s, repetidamente; também horários e duração de sessão parecidos."],
+          ["relog", "Tempo de jogo que se compensa", "Nos dias em que um joga muito, o outro joga pouco, e a soma dos dois fica estável (precisa de 10 dias de dados)."],
+          ["metadata", "Mesmo lugar de caça", "Morrem para os mesmos monstros em horários diferentes. Sinal fraco, só reforça."],
           ["exclusion", "Exclusão mútua", "Os dois foram vistos online juntos: descartado para sempre."],
           ["naming", "Nome similar", "Mesma raiz de nome ignorando títulos (Sir, Lord, Maker, Bank...), mais forte com vocação diferente."],
+          ["naming", "Troca de nome", "O Miracle não mostra nomes antigos: um char some e logo surge um nome novo com a mesma vocação, level e residência (guild e comentário iguais reforçam)."],
           ["guild", "Guilda", "Guildas em comum, principalmente entrando e saindo nos mesmos dias."],
+          ["guild", "Entrada na guild em sequência", "Apareceram como membros novos na mesma leitura da guild. Sinal fraco."],
           ["house", "Casa", "A casa passou de um personagem para o outro no mesmo dia."],
           ["metadata", "Metadados fixos", "Comentário de perfil idêntico, mesmo lote de banimento, rename no mesmo dia."],
           ["network", "Aliados", "Morreram juntos, mataram juntos, matam as mesmas vítimas ou morreram no mesmo minuto."],
@@ -314,9 +318,13 @@
       { icon: "metadata", title: "Evidence types", blocks: [
         { ev: [
           ["relog", "Temporal correlation", "A logs out and B logs in within 30s, repeatedly; also similar hours and session length."],
+          ["relog", "Play time that swaps", "On days one plays a lot the other plays little, and their sum stays stable (needs 10 days of data)."],
+          ["metadata", "Same hunting spot", "They die to the same monsters at different times. Weak signal, only reinforces."],
           ["exclusion", "Mutual exclusion", "Both were seen online together: ruled out forever."],
           ["naming", "Similar name", "Same name root ignoring titles (Sir, Lord, Maker, Bank...), stronger with a different vocation."],
+          ["naming", "Name change", "Miracle does not show former names: a character disappears and a new name shows up with the same vocation, level and residence (same guild and comment reinforce)."],
           ["guild", "Guild", "Guilds in common, especially joining and leaving on the same days."],
+          ["guild", "Guild joins in sequence", "They showed up as new members in the same read of the guild. Weak signal."],
           ["house", "House", "The house passed from one character to the other on the same day."],
           ["metadata", "Fixed metadata", "Identical profile comment, same ban batch, rename on the same day."],
           ["network", "Allies", "Died together, killed together, kill the same victims or died in the same minute."],
@@ -488,9 +496,13 @@
       { icon: "metadata", title: "Bevistyper", blocks: [
         { ev: [
           ["relog", "Tidsmässig korrelation", "A loggar ut och B loggar in inom 30 s, upprepade gånger; även liknande tider och sessionslängd."],
+          ["relog", "Speltid som växlar", "De dagar den ena spelar mycket spelar den andra lite, och summan är stabil (kräver 10 dagars data)."],
+          ["metadata", "Samma jaktplats", "De dör mot samma monster vid olika tider. Svag signal, förstärker bara."],
           ["exclusion", "Ömsesidig uteslutning", "Båda sågs online samtidigt: utesluten för alltid."],
           ["naming", "Liknande namn", "Samma namnrot utan titlar (Sir, Lord, Maker, Bank...), starkare med olika yrke."],
+          ["naming", "Namnbyte", "Miracle visar inte tidigare namn: en karaktär försvinner och ett nytt namn dyker upp med samma yrke, nivå och bostad (samma gille och kommentar förstärker)."],
           ["guild", "Gille", "Gemensamma gillen, särskilt inträde och utträde samma dagar."],
+          ["guild", "Inträde i gillet i följd", "De dök upp som nya medlemmar i samma läsning av gillet. Svag signal."],
           ["house", "Hus", "Huset gick från den ena karaktären till den andra samma dag."],
           ["metadata", "Fast metadata", "Identisk profilkommentar, samma avstängningsomgång, namnbyte samma dag."],
           ["network", "Allierade", "Dog tillsammans, dödade tillsammans, dödar samma offer eller dog samma minut."],
