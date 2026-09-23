@@ -48,6 +48,11 @@
     return el;
   }
 
+  // Limites de zoom: com poucos nos o "fit" do vis-network ampliava tudo (no celular os nos ficavam gigantes).
+  function small() { return window.matchMedia("(max-width: 860px)").matches; }
+  function maxScale() { return small() ? 0.9 : 1.4; }
+  var MIN_SCALE = 0.15;
+
   var PALETTE = ["#d9b45b", "#4fb286", "#5b9bd5", "#c77dba", "#d98a4e", "#4fb3b3", "#9bb85c", "#d05b61"];
 
   function Graph(container, onSelect) {
@@ -58,7 +63,7 @@
     this.data = { nodes: [], edges: [], clusters: [] };
     this.network = new vis.Network(container, { nodes: this.nodes, edges: this.edges }, {
       autoResize: true,
-      interaction: { hover: true, tooltipDelay: 120, navigationButtons: false, keyboard: true },
+      interaction: { hover: !small(), tooltipDelay: 120, navigationButtons: false, keyboard: true, zoomSpeed: 0.5 },
       physics: { solver: "forceAtlas2Based", stabilization: { iterations: 180 },
         forceAtlas2Based: { gravitationalConstant: -60, springLength: 120 } },
       nodes: { shape: "dot", size: 14, borderWidth: 2 },
@@ -69,15 +74,34 @@
     this.network.on("click", function (p) {
       if (p.nodes.length && self.onSelect) self.onSelect(p.nodes[0]);
     });
+    // Pinca/roda do mouse nunca passa dos limites.
+    this.network.on("zoom", function () {
+      var s = self.network.getScale();
+      if (s > maxScale() || s < MIN_SCALE) {
+        self.network.moveTo({ scale: Math.min(maxScale(), Math.max(MIN_SCALE, s)) });
+      }
+    });
+    this.network.on("stabilizationIterationsDone", function () { self.fit(); });
+    var timer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { self.fit(); }, 200);
+    });
   }
+
+  // Enquadra todos os nos, sem ampliar alem do limite.
+  Graph.prototype.fit = function () {
+    this.network.fit({ animation: false });
+    if (this.network.getScale() > maxScale()) this.network.moveTo({ scale: maxScale() });
+  };
 
   // Cores do texto seguem o tema (claro/escuro) via variaveis CSS.
   Graph.prototype.applyTheme = function () {
     var font = "IBM Plex Mono, Menlo, monospace";
     this.network.setOptions({
-      nodes: { font: { color: css("--text", "#e7e5db"), size: 12, face: font },
+      nodes: { font: { color: css("--text", "#e7e5db"), size: small() ? 11 : 12, face: font }, size: small() ? 10 : 14,
         color: { border: css("--border", "#303a34"), background: css("--surface-2", "#202824") } },
-      edges: { font: { color: css("--text-2", "#c3cac2"), size: 11, strokeWidth: 3, strokeColor: css("--bg", "#0f1312"),
+      edges: { font: { color: css("--text-2", "#c3cac2"), size: small() ? 9 : 11, strokeWidth: 3, strokeColor: css("--bg", "#0f1312"),
         face: font } }
     });
     if (this.data && this.data.nodes.length) this.render(this._filter || function () { return true; });
@@ -114,6 +138,7 @@
         dashes: !!(e.inferred || (e.excluded && !e.social))
       };
     }));
+    this.fit();
     return { nodes: nodes.length, edges: edges.length };
   };
 
@@ -121,7 +146,8 @@
     var ids = names.filter(function (n) { return this.nodes.get(n); }, this);
     if (!ids.length) return;
     this.network.selectNodes(ids);
-    this.network.fit({ nodes: ids, animation: { duration: 500 } });
+    this.network.fit({ nodes: ids, animation: false });
+    if (this.network.getScale() > maxScale()) this.network.moveTo({ scale: maxScale() });
   };
 
   Graph.prototype.png = function () {

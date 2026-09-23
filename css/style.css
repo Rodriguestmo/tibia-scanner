@@ -180,7 +180,7 @@ time { color: var(--text-2); font-variant-numeric: tabular-nums; }
 .graph-layout { display: grid; grid-template-columns: 260px 1fr; gap: 12px; height: calc(100vh - 56px - 36px); }
 .filters { overflow-y: auto; }
 .graph-wrap { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: 2px; min-height: 360px; overflow: hidden; }
-.graph-canvas { position: absolute; inset: 0; }
+.graph-canvas { position: absolute; inset: 0; touch-action: none; }  /* pinca vai para o grafo, nao para a pagina */
 .graph-toolbar { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; z-index: 2; pointer-events: none; }
 .graph-toolbar > * { pointer-events: auto; }
 .graph-stats { background: var(--surface-2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; font-size: 11px; color: var(--text-2); }
@@ -329,8 +329,23 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .only-mobile { display: inline-flex; }
   .hide-mobile { display: none !important; }
   .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  .topbar { height: auto; min-height: 52px; padding: 8px 12px; flex-wrap: wrap; gap: 8px; }
-  .topbar-tools { width: 100%; margin-left: 0; justify-content: space-between; flex-wrap: wrap; order: 3; }
+  /* 2 linhas: [menu, marca, status, sino, tema, sair] / [idioma, fuso] */
+  .topbar { height: auto; min-height: 52px; padding: 8px 12px; flex-wrap: wrap; gap: 8px 10px; }
+  .topbar-tools { display: contents; }
+  .health { order: 3; }
+  #health-label { display: none; }
+  .notif { order: 4; margin-left: auto; }
+  #theme-toggle { order: 5; }
+  #logout { order: 6; }
+  .lang-switch { order: 7; }
+  .tz { order: 8; flex: 1 1 0; min-width: 0; }
+  .tz select { width: 100%; min-width: 0; max-width: none; }
+  #tz-icon, .lang-switch > .icon-wrap:first-child { display: none; }
+  .lang-switch { flex: none; }
+  .brand-title { font-size: 13px; }
+  .brand .icon { width: 18px; height: 18px; }
+  .topbar .btn-icon { width: 32px; min-height: 32px; }
+  .inv-grid .inv-col:nth-child(2) { order: -1; }  /* suspeitos e grafo antes do historico longo */
   .sidebar {
     position: fixed; top: 0; left: 0; bottom: 0; width: 260px; z-index: 40;
     transform: translateX(-100%); transition: transform 0.22s ease; box-shadow: var(--shadow);
@@ -341,7 +356,8 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .graph-layout { grid-template-columns: 1fr; height: auto; }
   .filters { display: none; }
   .filters.open { display: block; }
-  .graph-wrap { height: 70vh; }
+  .graph-wrap { height: 62vh; min-height: 320px; }
+  .mini-graph { height: 260px; }
   .cmp-grid { grid-template-columns: 1fr; }
   .side-panel { top: 0; width: 100%; }
   .timeline-graph { height: 60vh; }
@@ -354,6 +370,10 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .graph-toolbar .btn-label { display: none; }
   .graph-toolbar .btn { width: 34px; padding: 0; }
   .graph-stats { font-size: 10px; }
+}
+
+@media (max-width: 340px) {
+  .topbar .brand-title { display: none; }  /* telas muito estreitas: so o icone da marca */
 }
 
 @media (max-width: 420px) {
