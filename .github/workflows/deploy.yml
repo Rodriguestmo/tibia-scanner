@@ -1,5 +1,5 @@
 # Publica o frontend no GitHub Pages a cada push na main.
-# Configure em Settings > Secrets and variables > Actions > Variables: BACKEND_URL (ex.: https://SEU-PI.tailXXXX.ts.net:8443)
+# Configure em Settings > Secrets and variables > Actions > Variables: BACKEND_URL (endereco da API)
 name: deploy
 
 on:

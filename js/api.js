@@ -1,4 +1,4 @@
-// Cliente HTTP + WebSocket para o backend no Pi. Erros chegam como chave de traducao ({"error": "auth.x"}).
+// Cliente HTTP + WebSocket para a API. Erros chegam como chave de traducao ({"error": "auth.x"}).
 (function () {
   "use strict";
   var base = function () { return window.SCANNER_CONFIG.BACKEND_URL; };

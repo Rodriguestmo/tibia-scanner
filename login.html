@@ -30,11 +30,6 @@
     </div>
     <label class="field"><span class="field-label" data-i18n="auth.password"></span>
       <input id="password" type="password" autocomplete="current-password" required autofocus></label>
-    <details class="advanced">
-      <summary data-i18n="auth.backend"></summary>
-      <label class="field"><span class="muted small" data-i18n="auth.backend_hint"></span>
-        <input id="backend" type="url" autocomplete="off" spellcheck="false"></label>
-    </details>
     <p id="login-error" class="error" role="alert" hidden></p>
     <button class="btn btn-primary" type="submit" style="width:100%"><span data-icon="arrow"></span><span data-i18n="auth.login"></span></button>
   </form>
@@ -70,14 +65,8 @@
     }
     window.I18N.onChange(function () { langs(); showError(shownError); });
     $("#theme-toggle").addEventListener("click", function () { window.THEME.toggle(); });
-    $("#backend").value = window.SCANNER_CONFIG.BACKEND_URL;
     $("#login-form").addEventListener("submit", function (ev) {
       ev.preventDefault();
-      var url = $("#backend").value.trim().replace(/\/+$/, "");
-      if (url && url !== window.SCANNER_CONFIG.BACKEND_URL) {
-        try { localStorage.setItem("backend_url", url); } catch (e) { /* ignore */ }
-        window.SCANNER_CONFIG.BACKEND_URL = url;
-      }
       showError(null);
       window.API.login($("#password").value).then(function (res) {
         window.AUTH.save(res.token, res.expires_in);
