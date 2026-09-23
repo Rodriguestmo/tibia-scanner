@@ -101,7 +101,6 @@ button, input, select { font: inherit; color: inherit; }
 .nav-item:hover { background: var(--surface-2); color: var(--text); }
 .nav-item.active { background: var(--surface-2); border-color: var(--border-strong); border-left-color: var(--accent); color: var(--text); }
 .nav-item.active .icon { color: var(--accent); }
-.sidebar-foot { margin-top: auto; padding: 10px; color: var(--muted); font-size: 11px; }
 
 .main { overflow: auto; padding: 18px; min-width: 0; }
 .view-title { margin: 0 0 14px; font-size: 16px; color: var(--text); letter-spacing: 0.02em; }
@@ -210,6 +209,8 @@ div.vis-tooltip, .vis-tip {
 .panel-head h2 { margin: 0; font-size: 15px; color: var(--accent); }
 .panel-body { padding: 14px; overflow-y: auto; }
 .panel-body > .btn { margin-bottom: 12px; width: 100%; }
+.panel-actions { display: grid; gap: 8px; margin-bottom: 12px; }
+.panel-actions .btn { width: 100%; }
 
 /* ---------------------------------------------------------------- heatmap / sessoes */
 .heatmap-grid { display: grid; grid-template-columns: 34px repeat(24, minmax(0, 1fr)); gap: 2px; font-size: 9px; }
@@ -259,8 +260,62 @@ table.diff tr.match td { background: color-mix(in srgb, var(--ok) 8%, transparen
 .login-card { width: min(400px, 100%); background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--accent); border-radius: 2px; padding: 24px; box-shadow: var(--shadow); }
 .login-card .brand { margin-bottom: 20px; }
 .login-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-.login-notice { margin-top: 16px; font-size: 11px; color: var(--muted); border-left: 2px solid var(--border-strong); padding-left: 10px; }
 details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px; margin: 8px 0; }
+
+/* ---------------------------------------------------------------- notificacoes */
+.notif { position: relative; }
+#notif-toggle { position: relative; }
+.notif-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+  background: var(--bad); color: #fff; font-size: 10px; font-weight: 700; line-height: 17px; text-align: center; }
+.notif-panel { position: absolute; right: 0; top: calc(100% + 8px); width: min(420px, calc(100vw - 24px)); max-height: 70vh;
+  display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-strong);
+  border-top: 2px solid var(--accent); border-radius: 2px; box-shadow: var(--shadow); z-index: 45; }
+.notif-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.notif-list { overflow-y: auto; padding: 0 12px; }
+.notif-list li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; padding: 9px 0; }
+.notif-list li.unread .notif-text { color: var(--text); font-weight: 600; }
+.notif-list .icon { color: var(--accent); margin-top: 2px; }
+.notif-text { color: var(--text-2); overflow-wrap: anywhere; }
+.notif-list time { display: block; font-size: 11px; color: var(--muted); }
+.notif-list a { color: inherit; }
+.notif-list li.notif-more { display: block; padding: 10px 0 12px; position: sticky; bottom: 0; background: var(--surface); border-bottom: 0; }
+.notif-more .btn { width: 100%; }
+.notif-page { padding: 0; }
+
+/* ---------------------------------------------------------------- guia "Como usar" */
+.guide { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 12px; align-items: start; }
+.guide-toc { position: sticky; top: 0; display: grid; gap: 2px; }
+.guide-toc-item { display: flex; gap: 10px; padding: 7px 8px; color: var(--text-2); border-left: 2px solid transparent; border-radius: 2px; }
+.guide-toc-item:hover { background: var(--surface-2); color: var(--text); }
+.guide-toc-item.active { background: var(--surface-2); border-left-color: var(--accent); color: var(--text); }
+.guide-toc-n { color: var(--muted); font-size: 11px; min-width: 18px; }
+.guide-page { padding: 22px 26px; max-width: 860px; }
+.guide-head { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.guide-icon .icon { width: 30px; height: 30px; color: var(--accent); }
+.guide-counter { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; }
+.guide-title { margin: 2px 0 0; font-size: 18px; color: var(--accent); }
+.guide-h { margin: 20px 0 8px; font-size: 13px; color: var(--text); text-transform: uppercase; letter-spacing: 0.08em; }
+.guide-p { color: var(--text-2); line-height: 1.7; margin: 8px 0; }
+.guide-list, .guide-steps { color: var(--text-2); line-height: 1.7; padding-left: 20px; margin: 8px 0; }
+.guide-list li, .guide-steps li { margin: 4px 0; }
+.guide-steps li::marker { color: var(--accent); font-weight: 700; }
+.guide-tip, .guide-warn { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; margin: 12px 0; border-radius: 2px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); }
+.guide-tip { border-left: 2px solid var(--ok); }
+.guide-tip .icon { color: var(--ok); margin-top: 2px; }
+.guide-warn { border-left: 2px solid var(--bad); }
+.guide-warn .icon { color: var(--bad); margin-top: 2px; }
+.guide-ev { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.guide-ev-item { display: flex; gap: 10px; padding: 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 2px; }
+.guide-ev-item p { margin: 4px 0 0; font-size: 12px; }
+.guide-ev-icon .icon { width: 20px; height: 20px; color: var(--accent); }
+.guide-ex { padding: 12px 14px; margin: 10px 0; border: 1px solid var(--border-strong); border-left: 2px solid var(--accent); border-radius: 2px; background: var(--surface-2); }
+.guide-ex p { color: var(--text-2); margin: 6px 0 10px; }
+.guide-ex-title { color: var(--text); }
+.guide-nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border); }
+.btn.disabled { opacity: 0.35; pointer-events: none; }
+.guide-signature { margin-top: 26px; text-align: right; font-style: italic; color: var(--muted); }
+.guide-signature-by { margin-right: 6px; }
+.guide-signature-name { color: var(--accent); font-size: 18px; font-weight: 700; letter-spacing: 0.06em; font-style: normal; }
 
 /* ---------------------------------------------------------------- responsivo */
 .only-mobile { display: none; }
@@ -292,6 +347,10 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .timeline-graph { height: 60vh; }
   .session-row { grid-template-columns: 76px 1fr; }
   .search-bar { flex-direction: column; }
+  .guide { grid-template-columns: 1fr; }
+  .notif-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; }
+  .guide-toc { position: static; }
+  .guide-page { padding: 16px; }
   .graph-toolbar .btn-label { display: none; }
   .graph-toolbar .btn { width: 34px; padding: 0; }
   .graph-stats { font-size: 10px; }

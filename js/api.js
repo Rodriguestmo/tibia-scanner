@@ -55,6 +55,7 @@
     compare: function (a, b) { return get("/compare", { char_a: a, char_b: b, lang: lang() }); },
     report: function (name) { return get("/report/" + enc(name), { lang: lang() }); },
     changes: function (hours) { return get("/changes", { hours: hours || 24 }); },
+    notifications: function (limit) { return get("/notifications", { limit: limit || 100 }); },
 
     // WebSocket com reconexao exponencial; handler recebe {type, data}.
     live: function (handler) {

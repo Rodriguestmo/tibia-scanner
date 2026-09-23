@@ -5,7 +5,7 @@
   var U = window.UI;
   var $ = function (sel) { return document.querySelector(sel); };
   var state = { graphData: null, view: "graph", filters: {} };
-  var graph, timelineGraph, animated, investigation, compare, detective;
+  var graph, timelineGraph, animated, investigation, compare, detective, guide;
 
   // ------------------------------------------------------------------------------------------ header
   function buildLangSwitch() {
@@ -62,12 +62,15 @@
     if (state.view === "detective") detective.relabel();
     if (state.view === "changes") loadChanges();
     if (state.view === "clusters") loadClusters();
+    if (state.view === "help") guide.render();
+    if (window.NOTIFS) window.NOTIFS.render();
     renderHealth(state.health);
   });
 
   window.TZ.onChange(function () {
     buildTzSelect();
     window.TZ.refresh(document);
+    if (window.NOTIFS) window.NOTIFS.render();
     if (state.view === "investigation" && investigation.data) investigation.render();
     if (state.view === "compare" && compare.data) compare.render();
     if (animated) animated.relabel();
@@ -220,17 +223,17 @@
       out.innerHTML = "";
       var blocks = [
         ["changes.new_links", c.new_links, function (x) {
-          var li = U.stampLine(x.first_utc, x.a + " / " + x.b, "transitive");
+          var li = U.stampLine(x.first_utc, t("changes.line.link", x), "transitive");
           li.insertBefore(U.pctBadge(x.confidence || 0), li.firstChild);
           return li;
         }],
         ["changes.relogs", c.relogs, function (x) {
-          return U.stampLine(x.login_utc, x.a + " → " + x.b + " (" + t("changes.gap", { gap: Math.round(x.gap_s) }) + ")", "relog");
+          return U.stampLine(x.login_utc, t("changes.line.relog", { a: x.a, b: x.b, gap: Math.round(x.gap_s) }), "relog");
         }],
-        ["changes.exclusions", c.exclusions, function (x) { return U.stampLine(x.seen_together_utc, x.a + " / " + x.b, "exclusion"); }],
-        ["changes.bans", c.bans, function (x) { return U.stampLine(x.banned_at_utc, x.name + " · " + x.reason, "ban"); }],
-        ["changes.houses", c.house_changes, function (x) { return U.stampLine(x.first_seen_utc, (x.name || "") + " → " + x.owner, "house"); }],
-        ["changes.guilds", c.guild_joins, function (x) { return U.stampLine(x.first_seen_utc, x.name + " → " + (x.guild || ""), "guild"); }]
+        ["changes.exclusions", c.exclusions, function (x) { return U.stampLine(x.seen_together_utc, t("changes.line.exclusion", x), "exclusion"); }],
+        ["changes.bans", c.bans, function (x) { return U.stampLine(x.banned_at_utc, t("changes.line.ban", x), "ban"); }],
+        ["changes.houses", c.house_changes, function (x) { return U.stampLine(x.first_seen_utc, t("changes.line.house", { owner: x.owner, house: x.name || "" }), "house"); }],
+        ["changes.guilds", c.guild_joins, function (x) { return U.stampLine(x.first_seen_utc, t("changes.line.guild", { name: x.name, guild: x.guild || "" }), "guild"); }]
       ];
       blocks.forEach(function (b) {
         var card = U.section(b[0]);
@@ -272,6 +275,7 @@
     feed = feed.slice(0, 60);
     renderFeed();
     if (msg.type === "relog" || msg.type === "exclusion") toast(text);
+    if (window.NOTIFS) window.NOTIFS.push(msg);
     if (msg.type === "correlations" || msg.type === "exclusion") {
       clearTimeout(reloadTimer);
       reloadTimer = setTimeout(loadGraph, 1500);
@@ -291,7 +295,7 @@
   }
 
   // ------------------------------------------------------------------------------------------ rotas
-  var VIEWS = ["graph", "investigation", "compare", "clusters", "timeline", "detective", "changes"];
+  var VIEWS = ["graph", "investigation", "compare", "clusters", "timeline", "detective", "changes", "help", "notifications"];
 
   function route() {
     var parts = (location.hash || "#graph").slice(1).split("/").map(decodeURIComponent);
@@ -308,6 +312,8 @@
     if (view === "clusters") loadClusters();
     if (view === "changes") loadChanges();
     if (view === "timeline" && timelineGraph) timelineGraph.network.redraw();
+    if (view === "help") guide.open(parseInt(parts[1] || "1", 10) - 1);
+    if (view === "notifications" && window.NOTIFS) window.NOTIFS.renderPage();
   }
 
   $("#inv-form").addEventListener("submit", function (ev) {
@@ -342,6 +348,9 @@
   investigation = new window.VIEWS.Investigation($("#view-investigation"));
   compare = new window.VIEWS.Compare($("#view-compare"));
   detective = new window.VIEWS.Detective($("#view-detective"));
+  guide = new window.VIEWS.Guide($("#view-help"));
+  window.NOTIFS = new window.Notifications($("#notif-toggle"), $("#notif-panel"), $("#notif-list"), $("#notif-badge"), $("#notif-count"),
+    $("#view-notifications"));
   window.addEventListener("hashchange", route);
   window.API.verify().then(function () {
     route();
@@ -349,5 +358,6 @@
     pollHealth();
     setInterval(pollHealth, window.SCANNER_CONFIG.HEALTH_EVERY_MS);
     window.API.live(onLive);
+    window.NOTIFS.load();
   }).catch(function () { window.AUTH.logout(); });
 })();

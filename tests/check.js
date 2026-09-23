@@ -12,6 +12,7 @@ global.document = { documentElement: {} };
 require(path.join(root, "js/config.js"));
 require(path.join(root, "js/i18n.js"));
 require(path.join(root, "js/timezone.js"));
+require(path.join(root, "js/guide-content.js"));
 
 let failures = 0;
 const fail = (msg) => { failures += 1; console.error("FALHA:", msg); };
@@ -35,6 +36,11 @@ for (const file of sources) {
   if (!file.endsWith("export.js") && /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(text)) fail(`emoji em ${file}`);
 }
 for (const k of used) if (!k.endsWith(".") && !(k in tr["pt-BR"])) fail(`chave usada e inexistente: ${k}`);  // "x." = prefixo dinamico
+
+const shape = (pages) => JSON.stringify(pages.map((p) => [p.icon, p.blocks.map((b) => Object.keys(b)[0] +
+  (b.ul || b.steps || b.ev ? ":" + (b.ul || b.steps || b.ev).length : "") + (b.ex ? ":" + b.ex.link : ""))]));
+const G = window.GUIDE_CONTENT;
+for (const l of ["en", "sv"]) if (shape(G[l]) !== shape(G["pt-BR"])) fail(`guia ${l} com estrutura diferente do pt-BR`);
 
 const at = "2026-03-22T23:14:00Z";
 const cases = [

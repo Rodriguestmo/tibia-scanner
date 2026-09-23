@@ -273,8 +273,47 @@
       .catch(function (err) { body.innerHTML = ""; body.appendChild(el("p", "error", err.message)); });
   }
 
+  // Painel lateral de um PAR (notificacoes): veredito, explicacao, evidencias e atalhos para cada ficha.
+  function pairPanel(panel, a, b) {
+    panel.innerHTML = "";
+    panel.classList.add("open");
+    var head = el("div", "panel-head");
+    head.appendChild(el("h2", null, a + " / " + b));
+    var close = i18nEl("button", "btn btn-ghost", "panel.close");
+    close.addEventListener("click", function () { panel.classList.remove("open"); });
+    head.appendChild(close);
+    panel.appendChild(head);
+    var body = el("div", "panel-body");
+    body.appendChild(i18nEl("p", "muted", "common.loading"));
+    panel.appendChild(body);
+    window.API.pair(a, b).then(function (pair) {
+      body.innerHTML = "";
+      var verdict = el("section", "card");
+      var top = el("div", "suspect-head");
+      top.appendChild(pctBadge(pair.confidence || pair.social, pair.social));
+      verdict.appendChild(top);
+      verdict.appendChild(el("p", "detective-text", pair.detective.conclusion));
+      body.appendChild(verdict);
+      var actions = el("div", "panel-actions");
+      [a, b].forEach(function (name) {
+        var btn = i18nEl("button", "btn", "panel.open_profile", { name: name });
+        btn.addEventListener("click", function () { sidePanel(panel, name); });
+        actions.appendChild(btn);
+      });
+      var cmp = i18nEl("a", "btn btn-primary", "panel.open_compare");
+      cmp.href = "#compare/" + encodeURIComponent(a) + "/" + encodeURIComponent(b);
+      cmp.addEventListener("click", function () { panel.classList.remove("open"); });
+      actions.appendChild(cmp);
+      body.appendChild(actions);
+      var ev = section("panel.evidence");
+      ev.appendChild(pair.evidence.length ? evidenceList(pair.evidence) : i18nEl("p", "muted", "panel.none"));
+      body.appendChild(ev);
+    }).catch(function (err) { body.innerHTML = ""; body.appendChild(el("p", "error", err.message)); });
+  }
+
   window.VIEWS = window.VIEWS || {};
   window.VIEWS.Investigation = Investigation;
   window.UI = { el: el, i18nEl: i18nEl, section: section, kv: kv, list: list, stampLine: stampLine, pctBadge: pctBadge,
-    profileCard: profileCard, historyCards: historyCards, evidenceList: evidenceList, sidePanel: sidePanel };
+    profileCard: profileCard, historyCards: historyCards, evidenceList: evidenceList, sidePanel: sidePanel,
+    pairPanel: pairPanel };
 })();

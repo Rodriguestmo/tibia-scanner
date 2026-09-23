@@ -41,6 +41,14 @@
         <select id="tz-select" data-i18n-aria="timezone.label"></select>
         <span id="tz-offset" class="tz-offset"></span>
       </label>
+      <div class="notif">
+        <button id="notif-toggle" class="btn btn-icon" type="button" data-i18n-title="notif.title" data-i18n-aria="notif.title"
+                aria-expanded="false"><span data-icon="bell"></span><span id="notif-badge" class="notif-badge" hidden></span></button>
+        <div id="notif-panel" class="notif-panel" hidden>
+          <div class="notif-head"><strong data-i18n="notif.title"></strong><span id="notif-count" class="muted small"></span></div>
+          <ul id="notif-list" class="list notif-list"></ul>
+        </div>
+      </div>
       <button id="theme-toggle" class="btn btn-icon" type="button" data-i18n-title="theme.toggle"
               data-i18n-aria="theme.toggle"></button>
       <button id="logout" class="btn btn-icon" type="button" data-icon="logout" data-i18n-title="nav.logout"
@@ -58,7 +66,8 @@
     <div class="nav-section" data-i18n="nav.section.monitor"></div>
     <a class="nav-item" href="#timeline" data-nav="timeline"><span data-icon="timeline"></span><span data-i18n="nav.timeline"></span></a>
     <a class="nav-item" href="#changes" data-nav="changes"><span data-icon="changes"></span><span data-i18n="nav.changes"></span></a>
-    <div class="sidebar-foot" data-i18n="footer.chavemestra"></div>
+    <div class="nav-section" data-i18n="nav.section.help"></div>
+    <a class="nav-item" href="#help" data-nav="help"><span data-icon="help"></span><span data-i18n="nav.help"></span></a>
   </nav>
 
   <main class="main">
@@ -178,6 +187,11 @@
       </div>
       <div id="changes-list" class="two-col"></div>
     </section>
+    <!-- Todas as notificacoes -->
+    <section id="view-notifications" hidden></section>
+
+    <!-- Como usar -->
+    <section id="view-help" hidden></section>
   </main>
 </div>
 
@@ -195,6 +209,9 @@
 <script src="js/compare.js" defer></script>
 <script src="js/detective.js" defer></script>
 <script src="js/export.js" defer></script>
+<script src="js/guide-content.js" defer></script>
+<script src="js/guide.js" defer></script>
+<script src="js/notifications.js" defer></script>
 <script src="js/app.js" defer></script>
 </body>
 </html>
