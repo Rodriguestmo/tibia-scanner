@@ -47,7 +47,7 @@
       y += 6;
       line(t("investigation.suspects", { count: r.suspects.length }), 12, true);
       r.suspects.slice(0, 15).forEach(function (s) {
-        line(s.other + " - " + window.GRAPH.pct(s.confidence || s.social), 10, true);
+        line(s.other + " - " + window.GRAPH.pct(window.GRAPH.pairValue(s)), 10, true);
         line(s.detective.conclusion, 9);
         y += 4;
       });

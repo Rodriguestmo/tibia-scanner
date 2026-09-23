@@ -12,7 +12,8 @@
           "Verde (80% ou mais): evidência forte e repetida, quase sempre relog em vários dias.",
           "Amarelo (50% a 79%): suspeita séria, normalmente inferida ou com poucas repetições.",
           "Cinza (abaixo de 50%): sinais fracos, como nome parecido ou mesma guilda.",
-          "Azul: vínculo social (as pessoas se conhecem), não mesma conta."
+          "Azul: aliados (jogam juntos), não mesma conta.",
+          "Laranja pontilhado: inimigos (um matou o outro), não mesma conta."
         ] },
         { warn: "Use o resultado como pista, nunca como prova única. Amigos que revezam o mesmo horário podem parecer alts; confira sempre as evidências cruas." },
         { tip: "Os dados crescem com o tempo. Nos primeiros dias o grafo fica quase vazio; depois de uma semana de coleta os relogs começam a aparecer com força." }
@@ -40,7 +41,8 @@
           "Borda vermelha grossa: personagem marcado como alvo.",
           "Cor e espessura da linha: quanto mais grossa e mais verde, maior a confiança.",
           "Linha tracejada: vínculo inferido por transitividade (A liga com B e B liga com C, então A provavelmente liga com C).",
-          "Linha azul: vínculo social; os dois estiveram online juntos, então não são a mesma conta, mas se conhecem.",
+          "Linha azul: aliados; os dois estiveram online juntos, então não são a mesma conta, mas jogam juntos.",
+          "Linha laranja pontilhada: inimigos; um matou o outro.",
           "Passe o mouse sobre uma linha para ver a confiança e os tipos de evidência com ícones."
         ] },
         { h: "Filtros" },
@@ -50,7 +52,7 @@
           "Janela temporal: mostra só vínculos que surgiram nos últimos 7, 30 ou 90 dias.",
           "Vocação e guilda: limitam os personagens exibidos.",
           "Tipo de evidência: marque um ou mais tipos para ver só as ligações que têm aquela prova.",
-          "Mostrar vínculos sociais: liga ou desliga as linhas azuis."
+          "Mostrar aliados e inimigos: liga ou desliga as linhas azuis e laranja."
         ] },
         { tip: "Clique em qualquer bolinha para abrir o painel lateral com a ficha completa. O botão Exportar PNG salva a imagem do grafo como está na tela." },
         { ex: { title: "Experimente", text: "Digite \"teste\" na busca do grafo: aparecem Teste e os alts de demonstração.", link: "#graph" } }
@@ -132,8 +134,8 @@
         { p: "Nome parecido, casa passada adiante, guilda em comum, ban no mesmo lote, comentário igual e horários parecidos somam de forma controlada: cada um reduz a chance de tudo ser coincidência. Exemplo: nome (10%) + casa (20%) + ban (15%) resulta em cerca de 40%, não em 99%." },
         { h: "Transitividade" },
         { p: "Se A é alt de B (99%) e B é alt de C (99%), o scanner infere A e C com 99% × 99% × 0,8 = 79% e desenha a linha tracejada. Nunca infere para pares já descartados." },
-        { h: "Vínculo social" },
-        { p: "Morrer junto para o mesmo monstro, matar um ao outro ou morrer no mesmo minuto mostram que as pessoas jogam ou brigam juntas. Como estavam online ao mesmo tempo, isso vira um placar separado (azul): se conhecem, mas não são a mesma conta." }
+        { h: "Aliados e inimigos" },
+        { p: "Aliados (azul): morreram juntos para o mesmo inimigo, mataram juntos (os dois aparecem na mesma morte) ou matam sempre as mesmas pessoas. Inimigos (laranja): um matou o outro. Os dois são placares separados da confiança de conta: quem joga junto ou se mata estava online ao mesmo tempo, então não é a mesma conta." }
       ] },
       { icon: "metadata", title: "Tipos de evidência", blocks: [
         { ev: [
@@ -143,7 +145,8 @@
           ["guild", "Guilda", "Guildas em comum, principalmente entrando e saindo nos mesmos dias."],
           ["house", "Casa", "A casa passou de um personagem para o outro no mesmo dia."],
           ["metadata", "Metadados fixos", "Comentário de perfil idêntico, mesmo lote de banimento, rename no mesmo dia."],
-          ["network", "Rede social", "Morreram juntos, PK entre eles ou mortes no mesmo minuto."],
+          ["network", "Aliados", "Morreram juntos, mataram juntos, matam as mesmas vítimas ou morreram no mesmo minuto."],
+          ["enemy", "Inimizade", "Um matou o outro (PK). Nunca conta como amizade."],
           ["highscore", "Highscores", "Aparecem e somem juntos nos rankings (quando a coleta de highscores estiver ativa)."],
           ["transitive", "Inferido", "Ligação deduzida por um personagem em comum."]
         ] }
@@ -154,8 +157,8 @@
         { ex: { title: "Inferido: Teste e Teste 2 (79%, tracejado)", text: "Teste 2 faz relog depois do Teste 1 e tem o mesmo comentário de perfil. Como Teste já é alt do Teste 1, o scanner infere Teste e Teste 2.", link: "#investigation/Teste 2" } },
         { ex: { title: "Suspeita moderada: Teste e Teste 3 (39%)", text: "A casa do Teste passou para o Teste 3 no mesmo dia e os dois foram banidos no mesmo minuto pelo mesmo motivo. Sinais fracos: vale investigar, não concluir.", link: "#compare/Teste/Teste 3" } },
         { ex: { title: "Descartado: Teste e Teste 4 (0%)", text: "Houve um relog que parecia suspeito, mas depois os dois apareceram online ao mesmo tempo. A exclusão mútua zera o par para sempre.", link: "#compare/Teste/Teste 4" } },
-        { ex: { title: "Vínculo social: Teste e Teste 5 (azul)", text: "Morreram juntos para dragon lords em três dias. Estavam online juntos: não é alt, é parceiro de hunt.", link: "#compare/Teste/Teste 5" } },
-        { ex: { title: "Rivalidade: Teste 5 e Teste 6", text: "Teste 6 matou o Teste 5 quatro vezes. Aparece como vínculo social de PK.", link: "#compare/Teste 5/Teste 6" } }
+        { ex: { title: "Aliados: Teste e Teste 5 (azul)", text: "Morreram juntos para dragon lords em três dias. Estavam online juntos: não é alt, é parceiro de hunt.", link: "#compare/Teste/Teste 5" } },
+        { ex: { title: "Inimigos: Teste 5 e Teste 6 (laranja)", text: "Teste 6 matou o Teste 5 quatro vezes. Aparece como inimizade, nunca como amizade.", link: "#compare/Teste 5/Teste 6" } }
       ] },
       { icon: "live", title: "Coleta, dicas e limites", blocks: [
         { h: "Como a coleta funciona" },
@@ -183,7 +186,8 @@
           "Green (80% or more): strong, repeated evidence, almost always relogs on several days.",
           "Yellow (50% to 79%): serious suspicion, usually inferred or with few repetitions.",
           "Grey (below 50%): weak signals such as a similar name or the same guild.",
-          "Blue: social link (the people know each other), not the same account."
+          "Blue: allies (they play together), not the same account.",
+          "Dotted orange: enemies (one killed the other), not the same account."
         ] },
         { warn: "Treat the result as a lead, never as the only proof. Friends who take turns at the same hours can look like alts; always check the raw evidence." },
         { tip: "The data grows over time. In the first days the graph is almost empty; after a week of collection relogs start to show up strongly." }
@@ -211,7 +215,8 @@
           "Thick red border: character marked as a target.",
           "Line colour and width: the thicker and greener, the higher the confidence.",
           "Dashed line: link inferred by transitivity (A links to B and B links to C, so A probably links to C).",
-          "Blue line: social link; both were online together, so they are not the same account, but they know each other.",
+          "Blue line: allies; both were online together, so they are not the same account, but they play together.",
+          "Dotted orange line: enemies; one killed the other.",
           "Hover over a line to see the confidence and the evidence types with icons."
         ] },
         { h: "Filters" },
@@ -221,7 +226,7 @@
           "Time window: shows only links that appeared in the last 7, 30 or 90 days.",
           "Vocation and guild: limit the characters shown.",
           "Evidence type: tick one or more types to see only links that have that proof.",
-          "Show social links: turns the blue lines on or off."
+          "Show allies and enemies: turns the blue and orange lines on or off."
         ] },
         { tip: "Click any dot to open the side panel with the full profile. Export PNG saves the graph image exactly as it is on screen." },
         { ex: { title: "Try it", text: "Type \"teste\" in the graph search: Teste and the demo alts appear.", link: "#graph" } }
@@ -303,8 +308,8 @@
         { p: "Similar name, house handed over, guild in common, same ban batch, identical comment and similar hours add up in a controlled way: each one lowers the chance that everything is a coincidence. Example: name (10%) + house (20%) + ban (15%) gives about 40%, not 99%." },
         { h: "Transitivity" },
         { p: "If A is an alt of B (99%) and B is an alt of C (99%), the scanner infers A and C at 99% × 99% × 0.8 = 79% and draws a dashed line. It never infers for pairs already ruled out." },
-        { h: "Social link" },
-        { p: "Dying together to the same monster, killing each other or dying in the same minute show that the people play or fight together. Since they were online at the same time, this becomes a separate score (blue): they know each other, but are not the same account." }
+        { h: "Allies and enemies" },
+        { p: "Allies (blue): died together to the same enemy, killed together (both in the same death) or keep killing the same people. Enemies (orange): one killed the other. Both are scores separate from account confidence: people who play together or kill each other were online at the same time, so they are not the same account." }
       ] },
       { icon: "metadata", title: "Evidence types", blocks: [
         { ev: [
@@ -314,7 +319,8 @@
           ["guild", "Guild", "Guilds in common, especially joining and leaving on the same days."],
           ["house", "House", "The house passed from one character to the other on the same day."],
           ["metadata", "Fixed metadata", "Identical profile comment, same ban batch, rename on the same day."],
-          ["network", "Social network", "Died together, PK between them or deaths in the same minute."],
+          ["network", "Allies", "Died together, killed together, kill the same victims or died in the same minute."],
+          ["enemy", "Enmity", "One killed the other (PK). Never counts as friendship."],
           ["highscore", "Highscores", "Appear and vanish together on the rankings (when highscore collection is enabled)."],
           ["transitive", "Inferred", "Link deduced through a character in common."]
         ] }
@@ -325,8 +331,8 @@
         { ex: { title: "Inferred: Teste and Teste 2 (79%, dashed)", text: "Teste 2 relogs after Teste 1 and has the same profile comment. Since Teste is already an alt of Teste 1, the scanner infers Teste and Teste 2.", link: "#investigation/Teste 2" } },
         { ex: { title: "Moderate suspicion: Teste and Teste 3 (39%)", text: "Teste's house passed to Teste 3 on the same day and both were banned in the same minute for the same reason. Weak signals: worth investigating, not concluding.", link: "#compare/Teste/Teste 3" } },
         { ex: { title: "Ruled out: Teste and Teste 4 (0%)", text: "There was a relog that looked suspicious, but later both appeared online at the same time. Mutual exclusion resets the pair forever.", link: "#compare/Teste/Teste 4" } },
-        { ex: { title: "Social link: Teste and Teste 5 (blue)", text: "They died together to dragon lords on three days. They were online together: not an alt, a hunting partner.", link: "#compare/Teste/Teste 5" } },
-        { ex: { title: "Rivalry: Teste 5 and Teste 6", text: "Teste 6 killed Teste 5 four times. It shows up as a PK social link.", link: "#compare/Teste 5/Teste 6" } }
+        { ex: { title: "Allies: Teste and Teste 5 (blue)", text: "They died together to dragon lords on three days. They were online together: not an alt, a hunting partner.", link: "#compare/Teste/Teste 5" } },
+        { ex: { title: "Enemies: Teste 5 and Teste 6 (orange)", text: "Teste 6 killed Teste 5 four times. It shows up as enmity, never as friendship.", link: "#compare/Teste 5/Teste 6" } }
       ] },
       { icon: "live", title: "Collection, tips and limits", blocks: [
         { h: "How collection works" },
@@ -354,7 +360,8 @@
           "Grön (80% eller mer): starka, upprepade bevis, nästan alltid relog under flera dagar.",
           "Gul (50% till 79%): allvarlig misstanke, oftast härledd eller med få upprepningar.",
           "Grå (under 50%): svaga signaler, som liknande namn eller samma gille.",
-          "Blå: social koppling (personerna känner varandra), inte samma konto."
+          "Blå: allierade (spelar tillsammans), inte samma konto.",
+          "Prickig orange: fiender (den ena dödade den andra), inte samma konto."
         ] },
         { warn: "Använd resultatet som ledtråd, aldrig som enda bevis. Vänner som turas om vid samma tider kan se ut som alts; kontrollera alltid de råa bevisen." },
         { tip: "Datan växer med tiden. De första dagarna är grafen nästan tom; efter en veckas insamling börjar relogs synas tydligt." }
@@ -382,7 +389,8 @@
           "Tjock röd kant: karaktär markerad som mål.",
           "Linjens färg och tjocklek: ju tjockare och grönare, desto högre konfidens.",
           "Streckad linje: koppling härledd genom transitivitet (A kopplas till B och B till C, alltså kopplas A troligen till C).",
-          "Blå linje: social koppling; båda var online samtidigt, så de är inte samma konto men känner varandra.",
+          "Blå linje: allierade; båda var online samtidigt, så de är inte samma konto men spelar tillsammans.",
+          "Prickig orange linje: fiender; den ena dödade den andra.",
           "Håll muspekaren över en linje för att se konfidensen och bevistyperna med ikoner."
         ] },
         { h: "Filter" },
@@ -392,7 +400,7 @@
           "Tidsfönster: visar bara kopplingar som uppstått de senaste 7, 30 eller 90 dagarna.",
           "Yrke och gille: begränsar vilka karaktärer som visas.",
           "Bevistyp: kryssa i en eller flera typer för att bara se kopplingar med det beviset.",
-          "Visa sociala kopplingar: slår på eller av de blå linjerna."
+          "Visa allierade och fiender: slår på eller av de blå och orange linjerna."
         ] },
         { tip: "Klicka på en prick för att öppna sidopanelen med hela profilen. Exportera PNG sparar grafen precis som den ser ut på skärmen." },
         { ex: { title: "Prova", text: "Skriv \"teste\" i grafens sökfält: Teste och demo-altsen visas.", link: "#graph" } }
@@ -474,8 +482,8 @@
         { p: "Liknande namn, överlämnat hus, gemensamt gille, samma avstängningsomgång, identisk kommentar och liknande tider läggs ihop kontrollerat: var och en minskar chansen att allt är en slump. Exempel: namn (10%) + hus (20%) + avstängning (15%) ger cirka 40%, inte 99%." },
         { h: "Transitivitet" },
         { p: "Om A är alt till B (99%) och B är alt till C (99%) härleder skannern A och C till 99% × 99% × 0,8 = 79% och ritar en streckad linje. Den härleder aldrig för par som redan uteslutits." },
-        { h: "Social koppling" },
-        { p: "Att dö tillsammans mot samma monster, döda varandra eller dö samma minut visar att personerna spelar eller slåss tillsammans. Eftersom de var online samtidigt blir det en separat poäng (blå): de känner varandra men är inte samma konto." }
+        { h: "Allierade och fiender" },
+        { p: "Allierade (blå): dog tillsammans mot samma fiende, dödade tillsammans (båda i samma dödsfall) eller dödar samma personer. Fiender (orange): den ena dödade den andra. Båda är poäng skilda från kontokonfidensen: de som spelar tillsammans eller dödar varandra var online samtidigt, så de är inte samma konto." }
       ] },
       { icon: "metadata", title: "Bevistyper", blocks: [
         { ev: [
@@ -485,7 +493,8 @@
           ["guild", "Gille", "Gemensamma gillen, särskilt inträde och utträde samma dagar."],
           ["house", "Hus", "Huset gick från den ena karaktären till den andra samma dag."],
           ["metadata", "Fast metadata", "Identisk profilkommentar, samma avstängningsomgång, namnbyte samma dag."],
-          ["network", "Socialt nätverk", "Dog tillsammans, PK mellan dem eller dödsfall samma minut."],
+          ["network", "Allierade", "Dog tillsammans, dödade tillsammans, dödar samma offer eller dog samma minut."],
+          ["enemy", "Fiendskap", "Den ena dödade den andra (PK). Räknas aldrig som vänskap."],
           ["highscore", "Highscores", "Dyker upp och försvinner tillsammans på topplistorna (när insamling av highscores är aktiv)."],
           ["transitive", "Härledd", "Koppling härledd via en gemensam karaktär."]
         ] }
@@ -496,8 +505,8 @@
         { ex: { title: "Härledd: Teste och Teste 2 (79%, streckad)", text: "Teste 2 gör relog efter Teste 1 och har samma profilkommentar. Eftersom Teste redan är alt till Teste 1 härleder skannern Teste och Teste 2.", link: "#investigation/Teste 2" } },
         { ex: { title: "Måttlig misstanke: Teste och Teste 3 (39%)", text: "Testes hus gick till Teste 3 samma dag och båda stängdes av samma minut av samma skäl. Svaga signaler: värt att utreda, inte att dra slutsatser av.", link: "#compare/Teste/Teste 3" } },
         { ex: { title: "Utesluten: Teste och Teste 4 (0%)", text: "Det fanns en relog som såg misstänkt ut, men senare var båda online samtidigt. Ömsesidig uteslutning nollställer paret för alltid.", link: "#compare/Teste/Teste 4" } },
-        { ex: { title: "Social koppling: Teste och Teste 5 (blå)", text: "De dog tillsammans mot dragon lords tre dagar. De var online samtidigt: inte en alt utan en jaktkompis.", link: "#compare/Teste/Teste 5" } },
-        { ex: { title: "Rivalitet: Teste 5 och Teste 6", text: "Teste 6 dödade Teste 5 fyra gånger. Det visas som en social PK-koppling.", link: "#compare/Teste 5/Teste 6" } }
+        { ex: { title: "Allierade: Teste och Teste 5 (blå)", text: "De dog tillsammans mot dragon lords tre dagar. De var online samtidigt: inte en alt utan en jaktkompis.", link: "#compare/Teste/Teste 5" } },
+        { ex: { title: "Fiender: Teste 5 och Teste 6 (orange)", text: "Teste 6 dödade Teste 5 fyra gånger. Det visas som fiendskap, aldrig som vänskap.", link: "#compare/Teste 5/Teste 6" } }
       ] },
       { icon: "live", title: "Insamling, tips och begränsningar", blocks: [
         { h: "Hur insamlingen fungerar" },

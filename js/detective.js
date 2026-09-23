@@ -40,7 +40,7 @@
       var card = U.el("section", "card");
       card.appendChild(U.i18nEl("h3", "card-title", "detective.conclusion"));
       var head = U.el("div", "suspect-head");
-      head.appendChild(U.pctBadge(pair.confidence || pair.social, pair.social));
+      head.appendChild(U.pctBadge(pair));
       card.appendChild(head);
       card.appendChild(U.el("p", "detective-text big", pair.detective.conclusion));
       if (pair.detective.reasons && pair.detective.reasons.length) {

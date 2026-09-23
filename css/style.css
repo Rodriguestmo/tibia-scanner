@@ -20,6 +20,7 @@
   --warn: #d9b45b;
   --bad: #d05b61;
   --info: #5b9bd5;
+  --enemy: #e0703a;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   --heat: 217, 180, 91;
   color-scheme: dark;
@@ -43,6 +44,7 @@
   --warn: #9a7a22;
   --bad: #b7424a;
   --info: #3a78b5;
+  --enemy: #c2571f;
   --shadow: 0 8px 24px rgba(40, 36, 20, 0.12);
   --heat: 154, 122, 34;
   color-scheme: light;
@@ -188,6 +190,7 @@ time { color: var(--text-2); font-variant-numeric: tabular-nums; }
 .legend { display: grid; gap: 6px; }
 .legend span { display: flex; align-items: center; gap: 8px; color: var(--text-2); }
 .legend i { width: 22px; height: 3px; border-radius: 2px; display: inline-block; }
+.legend i.dotted { background: repeating-linear-gradient(90deg, var(--enemy) 0 3px, transparent 3px 7px) !important; }
 .legend i.dashed { background: repeating-linear-gradient(90deg, var(--muted) 0 4px, transparent 4px 7px) !important; }
 .mini-graph { position: relative; height: 320px; }
 div.vis-tooltip, .vis-tip {

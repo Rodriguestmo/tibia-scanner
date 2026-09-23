@@ -49,10 +49,12 @@
     return li;
   }
 
-  function pctBadge(value, social) {
+  // Recebe o par ({confidence, social, enemy, excluded}): cor e numero seguem a mesma regra das arestas do grafo.
+  function pctBadge(p) {
+    if (typeof p !== "object" || p === null) p = { confidence: p || 0 };  // so a confianca (clusters, listas)
     var b = el("span", "badge");
-    b.textContent = window.GRAPH.pct(value);
-    b.style.background = window.GRAPH.edgeColor({ confidence: value, social: social });
+    b.textContent = window.GRAPH.pct(window.GRAPH.pairValue(p));
+    b.style.background = window.GRAPH.edgeColor(p);
     return b;
   }
 
@@ -200,7 +202,7 @@
     data.suspects.forEach(function (s) {
       var item = el("div", "suspect");
       var head = el("div", "suspect-head");
-      head.appendChild(pctBadge(s.confidence || s.social, s.social));
+      head.appendChild(pctBadge(s));
       var link = el("a", "suspect-name", s.other);
       link.href = "#investigation/" + encodeURIComponent(s.other);
       head.appendChild(link);
@@ -254,7 +256,7 @@
         ev.appendChild(list(res[2].items, function (c) {
           var other = c.a === name ? c.b : c.a;
           var li = el("li");
-          li.appendChild(pctBadge(c.confidence || c.social, c.social));
+          li.appendChild(pctBadge(c));
           var a = el("a", null, " " + other + " ");
           a.href = "#compare/" + encodeURIComponent(name) + "/" + encodeURIComponent(other);
           li.appendChild(a);
@@ -290,7 +292,7 @@
       body.innerHTML = "";
       var verdict = el("section", "card");
       var top = el("div", "suspect-head");
-      top.appendChild(pctBadge(pair.confidence || pair.social, pair.social));
+      top.appendChild(pctBadge(pair));
       verdict.appendChild(top);
       verdict.appendChild(el("p", "detective-text", pair.detective.conclusion));
       body.appendChild(verdict);

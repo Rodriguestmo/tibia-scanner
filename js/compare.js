@@ -29,7 +29,7 @@
     var out = this.root.querySelector("#cmp-result");
     out.innerHTML = "";
     var verdict = U.el("div", "card verdict");
-    verdict.appendChild(U.pctBadge(d.pair.confidence || d.pair.social, d.pair.social));
+    verdict.appendChild(U.pctBadge(d.pair));
     verdict.appendChild(U.el("p", "detective-text", d.pair.detective.conclusion));
     out.appendChild(verdict);
     var cols = U.el("div", "cmp-grid");

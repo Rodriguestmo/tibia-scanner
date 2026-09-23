@@ -1,7 +1,13 @@
 // Grafo interativo de "garfos" (vis-network): no = personagem, aresta = associacao com % e icones da evidencia.
 (function () {
   "use strict";
-  var COLORS = { high: "#4fb286", mid: "#d9b45b", low: "#89928b", social: "#5b9bd5", excluded: "#d05b61" };
+  var COLORS = { high: "#4fb286", mid: "#d9b45b", low: "#89928b", social: "#5b9bd5", enemy: "#e0703a", excluded: "#d05b61" };
+
+  // Relacao entre PESSOAS (nao conta): aliados (social) ou inimigos (PK); vale a mais forte.
+  function relation(e) {
+    if ((e.social || 0) >= (e.enemy || 0) && e.social > 0) return "social";
+    return e.enemy > 0 ? "enemy" : null;
+  }
 
   function css(name, fallback) {
     var v = getComputedStyle(document.documentElement).getPropertyValue(name);
@@ -9,8 +15,9 @@
   }
 
   function edgeColor(e) {
-    if (e.excluded) return e.social ? COLORS.social : COLORS.excluded;
-    if (!e.confidence && e.social) return COLORS.social;
+    var rel = relation(e);
+    if (e.excluded) return rel ? COLORS[rel] : COLORS.excluded;
+    if (!e.confidence && rel) return COLORS[rel];
     if (e.confidence >= 0.8) return COLORS.high;
     if (e.confidence >= 0.5) return COLORS.mid;
     return COLORS.low;
@@ -18,8 +25,9 @@
 
   // Rotulo so com o numero: canvas nao desenha SVG; os tipos de evidencia aparecem no tooltip com icones.
   function edgeLabel(e) {
-    if (e.excluded) return e.social ? pct(e.social) : "0%";
-    return pct(e.confidence || e.social || 0);
+    var rel = relation(e);
+    if (e.excluded) return rel ? pct(e[rel]) : "0%";
+    return pct(e.confidence || (rel ? e[rel] : 0));
   }
 
   // Nunca mostra 100%: o motor limita a confianca (max_confidence) e "100%" sugeriria certeza absoluta.
@@ -28,8 +36,9 @@
   }
 
   function edgeTitle(e) {
-    var head = e.excluded ? t("graph.evidence.exclusion") + (e.social ? " · " + t("graph.social") + ": " + pct(e.social) : "") :
-      t("graph.confidence") + ": " + pct(e.confidence) + (e.social ? " · " + t("graph.social") + ": " + pct(e.social) : "");
+    var people = (e.social ? " · " + t("graph.social") + ": " + pct(e.social) : "") +
+      (e.enemy ? " · " + t("graph.enemy") + ": " + pct(e.enemy) : "");
+    var head = e.excluded ? t("graph.evidence.exclusion") + people : t("graph.confidence") + ": " + pct(e.confidence) + people;
     var el = document.createElement("div");
     el.className = "vis-tip";
     var title = document.createElement("strong");
@@ -135,7 +144,7 @@
         id: e.a + "|" + e.b + "|" + i, from: e.a, to: e.b, label: edgeLabel(e), title: edgeTitle(e),
         color: { color: edgeColor(e), highlight: edgeColor(e) },
         width: e.excluded ? 1 : 1 + 5 * Math.max(e.confidence || 0, (e.social || 0) * 0.5),
-        dashes: !!(e.inferred || (e.excluded && !e.social))
+        dashes: relation(e) === "enemy" && !e.confidence ? [3, 5] : !!(e.inferred || (e.excluded && !relation(e)))
       };
     }));
     this.fit();
@@ -155,5 +164,11 @@
     return canvas ? canvas.toDataURL("image/png") : null;
   };
 
-  window.GRAPH = { Graph: Graph, COLORS: COLORS, edgeColor: edgeColor, pct: pct };
+  // Numero que representa o par: confianca de conta; sem ela, o vinculo entre pessoas mais forte.
+  function pairValue(p) {
+    var rel = relation(p);
+    return p.confidence || (rel ? p[rel] : 0);
+  }
+
+  window.GRAPH = { Graph: Graph, COLORS: COLORS, edgeColor: edgeColor, pct: pct, relation: relation, pairValue: pairValue };
 })();

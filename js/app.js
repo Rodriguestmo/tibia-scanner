@@ -128,10 +128,10 @@
     return function (e) {
       var value = e.confidence || 0;
       if (e.excluded) {
-        var socialOk = f.social && e.social >= 0.05;
+        var socialOk = f.social && (e.social >= 0.05 || e.enemy >= 0.05);
         if (f.kinds.indexOf("exclusion") < 0 && !socialOk) return false;
       }
-      else if (value === 0) { if (!f.social || e.social < 0.05) return false; }
+      else if (value === 0) { if (!f.social || (e.social < 0.05 && !(e.enemy >= 0.05))) return false; }
       else if (value < f.min || value > f.max) return false;
       if (f.kinds.length && !(e.kinds || []).some(function (k) { return f.kinds.indexOf(k) >= 0; })) return false;
       var first = Date.parse(e.first_utc || "");
