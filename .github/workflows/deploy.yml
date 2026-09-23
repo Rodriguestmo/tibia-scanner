@@ -1,0 +1,43 @@
+# Publica o frontend no GitHub Pages a cada push na main.
+# Configure em Settings > Secrets and variables > Actions > Variables: BACKEND_URL (ex.: https://SEU-PI.tailXXXX.ts.net:8443)
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checar i18n e fusos
+        run: node tests/check.js
+      - name: Injetar URL do backend
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          if [ -n "$BACKEND_URL" ]; then
+            sed -i "s|__BACKEND_URL__|${BACKEND_URL%/}|" js/config.js
+          fi
+          mkdir -p _site
+          cp -r index.html login.html css js assets _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: pages
+        uses: actions/deploy-pages@v4

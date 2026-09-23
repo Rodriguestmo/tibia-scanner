@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tibia Scanner</title>
+  <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/theme.js"></script>
+</head>
+<body>
+<main class="login-page">
+  <form id="login-form" class="login-card">
+    <div class="login-top">
+      <div class="lang-switch"><span data-icon="globe"></span><div id="lang-switch" class="row"></div></div>
+      <button id="theme-toggle" class="btn btn-icon" type="button" data-i18n-title="theme.toggle"
+              data-i18n-aria="theme.toggle"></button>
+    </div>
+    <div class="brand">
+      <span data-icon="logo"></span>
+      <div>
+        <div class="brand-title" data-i18n="app.title">Tibia Scanner</div>
+        <div class="brand-sub" data-i18n="app.subtitle"></div>
+      </div>
+    </div>
+    <label class="field"><span class="field-label" data-i18n="auth.password"></span>
+      <input id="password" type="password" autocomplete="current-password" required autofocus></label>
+    <details class="advanced">
+      <summary data-i18n="auth.backend"></summary>
+      <label class="field"><span class="muted small" data-i18n="auth.backend_hint"></span>
+        <input id="backend" type="url" autocomplete="off" spellcheck="false"></label>
+    </details>
+    <p id="login-error" class="error" role="alert" hidden></p>
+    <button class="btn btn-primary" type="submit" style="width:100%"><span data-icon="arrow"></span><span data-i18n="auth.login"></span></button>
+    <p class="login-notice" data-i18n="login.notice"></p>
+  </form>
+</main>
+<script src="js/i18n.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script>
+  (function () {
+    "use strict";
+    var $ = function (s) { return document.querySelector(s); };
+    function icons() {
+      document.querySelectorAll("[data-icon]").forEach(function (el) { el.innerHTML = window.ICONS.svg(el.dataset.icon); });
+    }
+    function langs() {
+      var box = $("#lang-switch");
+      box.innerHTML = "";
+      [["pt-BR", "PT"], ["en", "EN"], ["sv", "SV"]].forEach(function (l) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "lang-btn" + (window.I18N.locale() === l[0] ? " active" : "");
+        b.innerHTML = window.ICONS.FLAGS[l[0]] + "<span>" + l[1] + "</span>";
+        b.addEventListener("click", function () { window.I18N.setLocale(l[0]); });
+        box.appendChild(b);
+      });
+    }
+    var shownError = null;
+    function showError(key) {
+      shownError = key;
+      var el = $("#login-error");
+      el.hidden = !key;
+      el.textContent = key ? t(key) : "";
+    }
+    window.I18N.onChange(function () { langs(); showError(shownError); });
+    $("#theme-toggle").addEventListener("click", function () { window.THEME.toggle(); });
+    $("#backend").value = window.SCANNER_CONFIG.BACKEND_URL;
+    $("#login-form").addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var url = $("#backend").value.trim().replace(/\/+$/, "");
+      if (url && url !== window.SCANNER_CONFIG.BACKEND_URL) {
+        try { localStorage.setItem("backend_url", url); } catch (e) { /* ignore */ }
+        window.SCANNER_CONFIG.BACKEND_URL = url;
+      }
+      showError(null);
+      window.API.login($("#password").value).then(function (res) {
+        window.AUTH.save(res.token, res.expires_in);
+        location.href = "index.html";
+      }).catch(function (err) { showError(err.key || "auth.unreachable"); });
+    });
+    if (window.AUTH.get()) location.replace("index.html");
+    icons();
+    langs();
+    window.I18N.apply(document);
+  })();
+</script>
+</body>
+</html>

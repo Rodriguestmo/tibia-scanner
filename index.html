@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Tibia Scanner</title>
+  <meta name="description" content="Tibia Scanner">
+  <link rel="icon" href="assets/icons/logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vis-network@9.1.9/standalone/umd/vis-network.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <button id="menu-toggle" class="btn btn-ghost btn-icon only-mobile" type="button" data-icon="menu"
+            data-i18n-aria="nav.menu" data-i18n-title="nav.menu"></button>
+    <div class="brand">
+      <span data-icon="logo"></span>
+      <div>
+        <div class="brand-title" data-i18n="app.title">Tibia Scanner</div>
+        <div class="brand-sub" data-i18n="app.subtitle"></div>
+      </div>
+    </div>
+    <div class="topbar-tools">
+      <div id="health" class="health" role="status">
+        <span id="health-dot" class="dot"></span><span id="health-label" data-i18n="health.offline"></span>
+      </div>
+      <div class="lang-switch" data-i18n-title="lang.change">
+        <span data-icon="globe"></span>
+        <div id="lang-switch" class="row" role="group" data-i18n-aria="lang.change"></div>
+      </div>
+      <label class="tz" data-i18n-title="timezone.label">
+        <span id="tz-icon" class="icon-wrap"></span>
+        <select id="tz-select" data-i18n-aria="timezone.label"></select>
+        <span id="tz-offset" class="tz-offset"></span>
+      </label>
+      <button id="theme-toggle" class="btn btn-icon" type="button" data-i18n-title="theme.toggle"
+              data-i18n-aria="theme.toggle"></button>
+      <button id="logout" class="btn btn-icon" type="button" data-icon="logout" data-i18n-title="nav.logout"
+              data-i18n-aria="nav.logout"></button>
+    </div>
+  </header>
+
+  <nav class="sidebar" aria-label="nav">
+    <div class="nav-section" data-i18n="nav.section.analysis"></div>
+    <a class="nav-item" href="#graph" data-nav="graph"><span data-icon="graph"></span><span data-i18n="nav.graph"></span></a>
+    <a class="nav-item" href="#investigation" data-nav="investigation"><span data-icon="investigation"></span><span data-i18n="nav.investigation"></span></a>
+    <a class="nav-item" href="#compare" data-nav="compare"><span data-icon="compare"></span><span data-i18n="nav.compare"></span></a>
+    <a class="nav-item" href="#clusters" data-nav="clusters"><span data-icon="clusters"></span><span data-i18n="nav.clusters"></span></a>
+    <a class="nav-item" href="#detective" data-nav="detective"><span data-icon="detective"></span><span data-i18n="nav.detective"></span></a>
+    <div class="nav-section" data-i18n="nav.section.monitor"></div>
+    <a class="nav-item" href="#timeline" data-nav="timeline"><span data-icon="timeline"></span><span data-i18n="nav.timeline"></span></a>
+    <a class="nav-item" href="#changes" data-nav="changes"><span data-icon="changes"></span><span data-i18n="nav.changes"></span></a>
+    <div class="sidebar-foot" data-i18n="footer.chavemestra"></div>
+  </nav>
+
+  <main class="main">
+    <!-- Grafo -->
+    <section id="view-graph">
+      <div class="graph-layout">
+        <aside id="filters" class="filters card">
+          <h3 class="card-title" data-i18n="filters.title"></h3>
+          <label class="field"><span class="field-label" data-i18n="filters.search"></span>
+            <input id="f-search" type="text" autocomplete="off" data-i18n-placeholder="filters.search"></label>
+          <div class="field"><span class="field-label" data-i18n="filters.confidence"></span>
+            <div class="row"><input id="f-min" type="range" min="0" max="100" value="20"><span id="f-min-label" class="small"></span></div>
+            <div class="row"><input id="f-max" type="range" min="0" max="100" value="100"><span id="f-max-label" class="small"></span></div>
+          </div>
+          <label class="field"><span class="field-label" data-i18n="filters.window"></span>
+            <select id="f-window">
+              <option value="7" data-i18n="filters.window.7"></option>
+              <option value="30" data-i18n="filters.window.30"></option>
+              <option value="90" data-i18n="filters.window.90"></option>
+              <option value="all" data-i18n="filters.window.all" selected></option>
+            </select></label>
+          <label class="field"><span class="field-label" data-i18n="filters.vocation"></span>
+            <select id="f-vocation"><option value="" data-i18n="filters.vocation.all"></option></select></label>
+          <label class="field"><span class="field-label" data-i18n="filters.guild"></span>
+            <input id="f-guild" type="text" autocomplete="off" data-i18n-placeholder="filters.guild"></label>
+          <div class="field"><span class="field-label" data-i18n="filters.evidence"></span>
+            <label class="check"><input class="f-kind" type="checkbox" value="relog"><span data-icon="relog"></span><span data-i18n="graph.evidence.relog"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="metadata"><span data-icon="metadata"></span><span data-i18n="graph.evidence.metadata"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="guild"><span data-icon="guild"></span><span data-i18n="graph.evidence.guild"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="house"><span data-icon="house"></span><span data-i18n="graph.evidence.house"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="naming"><span data-icon="naming"></span><span data-i18n="graph.evidence.naming"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="network"><span data-icon="network"></span><span data-i18n="graph.evidence.network"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="highscore"><span data-icon="highscore"></span><span data-i18n="graph.evidence.highscore"></span></label>
+            <label class="check"><input class="f-kind" type="checkbox" value="exclusion"><span data-icon="exclusion"></span><span data-i18n="graph.evidence.exclusion"></span></label>
+          </div>
+          <label class="check"><input id="f-social" type="checkbox" checked><span data-i18n="filters.social"></span></label>
+          <div class="field" style="margin-top:14px"><span class="field-label" data-i18n="graph.legend"></span>
+            <div class="legend">
+              <span><i style="background:var(--ok)"></i><span data-i18n="graph.legend.high"></span></span>
+              <span><i style="background:var(--warn)"></i><span data-i18n="graph.legend.mid"></span></span>
+              <span><i style="background:var(--muted)"></i><span data-i18n="graph.legend.low"></span></span>
+              <span><i style="background:var(--info)"></i><span data-i18n="graph.social"></span></span>
+              <span><i class="dashed"></i><span data-i18n="graph.evidence.transitive"></span></span>
+            </div>
+          </div>
+        </aside>
+        <div class="graph-wrap">
+          <div class="graph-toolbar">
+            <div id="graph-stats" class="graph-stats"></div>
+            <div class="row">
+              <button id="filters-toggle" class="btn only-mobile" type="button" data-i18n-title="filters.show"><span data-icon="filter"></span><span class="btn-label" data-i18n="filters.show"></span></button>
+              <button id="graph-export-png" class="btn" type="button" data-i18n-title="export.png"><span data-icon="image"></span><span class="btn-label" data-i18n="export.png"></span></button>
+            </div>
+          </div>
+          <div id="graph" class="graph-canvas"></div>
+          <div id="graph-empty" class="graph-empty" data-i18n="graph.empty" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Investigacao (CSI) -->
+    <section id="view-investigation" hidden>
+      <form id="inv-form" class="search-bar">
+        <input id="inv-input" type="text" autocomplete="off" data-i18n-placeholder="investigation.search" required>
+        <button class="btn btn-primary" type="submit"><span data-icon="search"></span><span data-i18n="investigation.go"></span></button>
+        <button id="export-png" class="btn" type="button"><span data-icon="image"></span><span data-i18n="export.png"></span></button>
+        <button id="export-pdf" class="btn" type="button"><span data-icon="file"></span><span data-i18n="export.pdf"></span></button>
+      </form>
+      <div id="inv-result"><p class="muted" data-i18n="investigation.empty"></p></div>
+    </section>
+
+    <!-- Comparador -->
+    <section id="view-compare" hidden>
+      <h2 class="view-title" data-i18n="compare.select_chars"></h2>
+      <form id="cmp-form" class="search-bar">
+        <input id="cmp-a" type="text" autocomplete="off" data-i18n-placeholder="compare.char_a" required>
+        <input id="cmp-b" type="text" autocomplete="off" data-i18n-placeholder="compare.char_b" required>
+        <button class="btn btn-primary" type="submit"><span data-icon="compare"></span><span data-i18n="compare.go"></span></button>
+      </form>
+      <div id="cmp-result"></div>
+    </section>
+
+    <!-- Clusters -->
+    <section id="view-clusters" hidden>
+      <h2 class="view-title" data-i18n="clusters.ranking"></h2>
+      <div id="clusters-list" class="two-col"></div>
+    </section>
+
+    <!-- Timeline animada -->
+    <section id="view-timeline" hidden>
+      <div class="timeline-controls card">
+        <button id="tl-play" class="btn btn-primary" type="button" data-i18n="timeline.play"></button>
+        <input id="tl-slider" type="range" min="0" max="0" value="0">
+        <span id="tl-label" class="small"></span>
+      </div>
+      <div class="graph-wrap timeline-graph"><div id="timeline-graph" class="graph-canvas"></div></div>
+    </section>
+
+    <!-- Detetive -->
+    <section id="view-detective" hidden>
+      <h2 class="view-title" data-i18n="detective.title"></h2>
+      <form id="det-form" class="search-bar">
+        <input id="det-input" type="text" autocomplete="off" data-i18n-placeholder="detective.prompt" required>
+        <button class="btn btn-primary" type="submit"><span data-icon="detective"></span><span data-i18n="detective.ask"></span></button>
+      </form>
+      <div id="det-result"></div>
+    </section>
+
+    <!-- Ultimas 24h + feed ao vivo -->
+    <section id="view-changes" hidden>
+      <h2 class="view-title" data-i18n="changes.title"></h2>
+      <div class="two-col">
+        <section class="card">
+          <h3 class="card-title"><span data-icon="live"></span> <span data-i18n="live.title"></span></h3>
+          <ul id="live-feed" class="list live-feed"><li class="muted" data-i18n="live.empty"></li></ul>
+        </section>
+      </div>
+      <div id="changes-list" class="two-col"></div>
+    </section>
+  </main>
+</div>
+
+<aside id="side-panel" class="side-panel" aria-live="polite"></aside>
+<div id="toasts" class="toasts"></div>
+
+<script src="js/i18n.js"></script>
+<script src="js/timezone.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/heatmap.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/graph.js" defer></script>
+<script src="js/investigation.js" defer></script>
+<script src="js/compare.js" defer></script>
+<script src="js/detective.js" defer></script>
+<script src="js/export.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
