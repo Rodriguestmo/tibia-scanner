@@ -46,7 +46,7 @@
         { h: "Filtros" },
         { ul: [
           "Buscar personagem: mostra só as ligações de quem tem esse texto no nome.",
-          "Faixa de confiança: por padrão começa em 20% para esconder o ruído de nomes parecidos.",
+          "Faixa de confiança: por padrão começa em 85%, mostrando só as ligações fortes. Baixe o controle para ver suspeitas mais fracas.",
           "Janela temporal: mostra só vínculos que surgiram nos últimos 7, 30 ou 90 dias.",
           "Vocação e guilda: limitam os personagens exibidos.",
           "Tipo de evidência: marque um ou mais tipos para ver só as ligações que têm aquela prova.",
@@ -217,7 +217,7 @@
         { h: "Filters" },
         { ul: [
           "Search character: shows only links of names containing that text.",
-          "Confidence range: starts at 20% by default to hide the noise of similar names.",
+          "Confidence range: starts at 85% by default, showing only strong links. Lower it to see weaker suspicions.",
           "Time window: shows only links that appeared in the last 7, 30 or 90 days.",
           "Vocation and guild: limit the characters shown.",
           "Evidence type: tick one or more types to see only links that have that proof.",
@@ -388,7 +388,7 @@
         { h: "Filter" },
         { ul: [
           "Sök karaktär: visar bara kopplingar för namn som innehåller texten.",
-          "Konfidensintervall: börjar på 20% som standard för att dölja bruset från liknande namn.",
+          "Konfidensintervall: börjar på 85% som standard och visar bara starka kopplingar. Sänk reglaget för att se svagare misstankar.",
           "Tidsfönster: visar bara kopplingar som uppstått de senaste 7, 30 eller 90 dagarna.",
           "Yrke och gille: begränsar vilka karaktärer som visas.",
           "Bevistyp: kryssa i en eller flera typer för att bara se kopplingar med det beviset.",
