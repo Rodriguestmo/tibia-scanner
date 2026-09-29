@@ -63,14 +63,12 @@
     if (state.view === "changes") loadChanges();
     if (state.view === "clusters") loadClusters();
     if (state.view === "help") guide.render();
-    if (window.NOTIFS) window.NOTIFS.render();
     renderHealth(state.health);
   });
 
   window.TZ.onChange(function () {
     buildTzSelect();
     window.TZ.refresh(document);
-    if (window.NOTIFS) window.NOTIFS.render();
     if (state.view === "investigation" && investigation.data) investigation.render();
     if (state.view === "compare" && compare.data) compare.render();
     if (animated) animated.relabel();
@@ -274,8 +272,6 @@
     feed.unshift({ at: (msg.data && (msg.data.at || msg.data.login_utc)) || new Date().toISOString(), text: text });
     feed = feed.slice(0, 60);
     renderFeed();
-    if (msg.type === "relog" || msg.type === "exclusion") toast(text);
-    if (window.NOTIFS) window.NOTIFS.push(msg);
     if (msg.type === "correlations" || msg.type === "exclusion") {
       clearTimeout(reloadTimer);
       reloadTimer = setTimeout(loadGraph, 1500);
@@ -295,7 +291,7 @@
   }
 
   // ------------------------------------------------------------------------------------------ rotas
-  var VIEWS = ["graph", "investigation", "compare", "clusters", "timeline", "detective", "changes", "help", "notifications"];
+  var VIEWS = ["graph", "investigation", "compare", "clusters", "timeline", "detective", "changes", "help"];
 
   function route() {
     var parts = (location.hash || "#graph").slice(1).split("/").map(decodeURIComponent);
@@ -313,7 +309,6 @@
     if (view === "changes") loadChanges();
     if (view === "timeline" && timelineGraph) timelineGraph.network.redraw();
     if (view === "help") guide.open(parseInt(parts[1] || "1", 10) - 1);
-    if (view === "notifications" && window.NOTIFS) window.NOTIFS.renderPage();
   }
 
   $("#inv-form").addEventListener("submit", function (ev) {
@@ -349,8 +344,6 @@
   compare = new window.VIEWS.Compare($("#view-compare"));
   detective = new window.VIEWS.Detective($("#view-detective"));
   guide = new window.VIEWS.Guide($("#view-help"));
-  window.NOTIFS = new window.Notifications($("#notif-toggle"), $("#notif-panel"), $("#notif-list"), $("#notif-badge"), $("#notif-count"),
-    $("#view-notifications"));
   window.addEventListener("hashchange", route);
   window.API.verify().then(function () {
     route();
@@ -358,6 +351,5 @@
     pollHealth();
     setInterval(pollHealth, window.SCANNER_CONFIG.HEALTH_EVERY_MS);
     window.API.live(onLive);
-    window.NOTIFS.load();
   }).catch(function () { window.AUTH.logout(); });
 })();

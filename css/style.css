@@ -265,25 +265,6 @@ table.diff tr.match td { background: color-mix(in srgb, var(--ok) 8%, transparen
 .login-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
 details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px; margin: 8px 0; }
 
-/* ---------------------------------------------------------------- notificacoes */
-.notif { position: relative; }
-#notif-toggle { position: relative; }
-.notif-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
-  background: var(--bad); color: #fff; font-size: 10px; font-weight: 700; line-height: 17px; text-align: center; }
-.notif-panel { position: absolute; right: 0; top: calc(100% + 8px); width: min(420px, calc(100vw - 24px)); max-height: 70vh;
-  display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border-strong);
-  border-top: 2px solid var(--accent); border-radius: 2px; box-shadow: var(--shadow); z-index: 45; }
-.notif-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); }
-.notif-list { overflow-y: auto; padding: 0 12px; }
-.notif-list li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; padding: 9px 0; }
-.notif-list li.unread .notif-text { color: var(--text); font-weight: 600; }
-.notif-list .icon { color: var(--accent); margin-top: 2px; }
-.notif-text { color: var(--text-2); overflow-wrap: anywhere; }
-.notif-list time { display: block; font-size: 11px; color: var(--muted); }
-.notif-list a { color: inherit; }
-.notif-list li.notif-more { display: block; padding: 10px 0 12px; position: sticky; bottom: 0; background: var(--surface); border-bottom: 0; }
-.notif-more .btn { width: 100%; }
-.notif-page { padding: 0; }
 
 /* ---------------------------------------------------------------- guia "Como usar" */
 .guide { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -337,7 +318,6 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .topbar-tools { display: contents; }
   .health { order: 3; }
   #health-label { display: none; }
-  .notif { order: 4; margin-left: auto; }
   #theme-toggle { order: 5; }
   #logout { order: 6; }
   .lang-switch { order: 7; }
@@ -367,7 +347,6 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
   .session-row { grid-template-columns: 76px 1fr; }
   .search-bar { flex-direction: column; }
   .guide { grid-template-columns: 1fr; }
-  .notif-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; }
   .guide-toc { position: static; }
   .guide-page { padding: 16px; }
   .graph-toolbar .btn-label { display: none; }
