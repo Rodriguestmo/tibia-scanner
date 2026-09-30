@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Miracle Scanner</title>
+  <link rel="stylesheet" href="../css/style.css?v=10">
+  <script src="../js/config.js?v=10"></script>
+  <style>
+    body { padding: 16px; }
+    .wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; }
+    form.search-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+    form.search-bar input { flex: 1; min-width: 180px; }
+    .card { overflow-x: auto; }
+    table.diff td { white-space: nowrap; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h2 class="view-title">Last scans</h2>
+
+  <form id="login" class="search-bar card" hidden>
+    <input id="pw" type="password" placeholder="Senha de admin" autocomplete="current-password" required>
+    <button class="btn btn-primary" type="submit">Entrar</button>
+    <p id="login-err" class="error" hidden></p>
+  </form>
+
+  <div id="panel" hidden>
+    <form id="search" class="search-bar">
+      <input id="q" type="text" placeholder="Nome do personagem (últimos 20 dias)" autocomplete="off">
+      <button class="btn btn-primary" type="submit">Pesquisar</button>
+      <button id="all" class="btn" type="button">Últimos 300</button>
+      <button id="logout" class="btn" type="button">Sair</button>
+    </form>
+    <div class="card" id="out"></div>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var API = window.SCANNER_CONFIG.BACKEND_URL, KEY = "ms_admin_token";
+  var $ = function (id) { return document.getElementById(id); };
+  function token() { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } }
+  function setToken(t) { try { t ? sessionStorage.setItem(KEY, t) : sessionStorage.removeItem(KEY); } catch (e) {} }
+  function el(tag, text) { var n = document.createElement(tag); if (text !== undefined) n.textContent = text; return n; }
+  function when(utc) {
+    return new Date(utc).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit",
+      year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  function show(logged) { $("login").hidden = logged; $("panel").hidden = !logged; }
+
+  function load(q) {
+    var out = $("out");
+    out.innerHTML = "";
+    out.appendChild(el("p", "Carregando..."));
+    fetch(API + "/admin/scans" + (q ? "?q=" + encodeURIComponent(q) : ""), { headers: { Authorization: "Bearer " + token() } })
+      .then(function (r) {
+        if (r.status === 401) { setToken(null); show(false); throw new Error("Sessão expirada, entre de novo."); }
+        return r.json();
+      })
+      .then(function (d) {
+        out.innerHTML = "";
+        out.appendChild(el("p", q ? (d.items.length ? d.items.length + " pesquisa(s) de " + d.name + " nos últimos 20 dias"
+          : "Ninguém pesquisou " + d.name + " nos últimos 20 dias.") : "Últimas " + d.items.length + " pesquisas"));
+        if (!d.items.length) return;
+        var t = el("table"); t.className = "diff";
+        var h = el("tr");
+        ["Quando (Brasília)", "Personagem", "Local", "Provedor", "IP"].forEach(function (x) { h.appendChild(el("th", x)); });
+        t.appendChild(h);
+        d.items.forEach(function (r) {
+          var tr = el("tr");
+          tr.appendChild(el("td", when(r.searched_utc)));
+          var td = el("td"), a = el("a", r.name);
+          a.className = "name-link";
+          a.href = "../#investigation/" + encodeURIComponent(r.name);
+          td.appendChild(a);
+          tr.appendChild(td);
+          tr.appendChild(el("td", [r.city, r.region, r.country].filter(Boolean).join(", ") || "—"));
+          tr.appendChild(el("td", r.asn_org || "—"));
+          tr.appendChild(el("td", r.ip || "—"));
+          t.appendChild(tr);
+        });
+        out.appendChild(t);
+      })
+      .catch(function (e) { out.innerHTML = ""; out.appendChild(el("p", e.message)); });
+  }
+
+  $("login").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var err = $("login-err");
+    err.hidden = true;
+    fetch(API + "/auth/login", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: $("pw").value }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error === "auth.rate_limited" ? "Muitas tentativas, espere um pouco." : "Senha incorreta.");
+        setToken(res.d.token);
+        $("pw").value = "";
+        show(true);
+        load("");
+      })
+      .catch(function (e) { err.textContent = e.message; err.hidden = false; });
+  });
+  $("search").addEventListener("submit", function (ev) { ev.preventDefault(); load($("q").value.trim()); });
+  $("all").addEventListener("click", function () { $("q").value = ""; load(""); });
+  $("logout").addEventListener("click", function () { setToken(null); show(false); });
+
+  if (token()) { show(true); load(""); } else show(false);
+})();
+</script>
+</body>
+</html>
