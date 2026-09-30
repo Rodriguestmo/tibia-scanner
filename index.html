@@ -168,15 +168,9 @@
       <div id="det-result"></div>
     </section>
 
-    <!-- Ultimas 24h + feed ao vivo -->
+    <!-- Ultimas 24h (sem feed ao vivo: a API publica nao tem WebSocket) -->
     <section id="view-changes" hidden>
       <h2 class="view-title" data-i18n="changes.title"></h2>
-      <div class="two-col">
-        <section class="card">
-          <h3 class="card-title"><span data-icon="live"></span> <span data-i18n="live.title"></span></h3>
-          <ul id="live-feed" class="list live-feed"><li class="muted" data-i18n="live.empty"></li></ul>
-        </section>
-      </div>
       <div id="changes-list" class="two-col"></div>
     </section>
 
