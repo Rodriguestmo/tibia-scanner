@@ -103,7 +103,7 @@
   }
 
   function historyCards(p) {
-    var frag = document.createDocumentFragment();
+    var out = document.createDocumentFragment();
     var g = section("panel.guilds");
     g.appendChild(list(p.guild_history, function (x) {
       var li = el("li");
@@ -117,17 +117,17 @@
       else li.appendChild(window.TZ.stamp(x.last_seen_utc, { dateOnly: true }));
       return li;
     }));
-    frag.appendChild(g);
+    out.appendChild(g);
     var h = section("panel.houses");
     h.appendChild(list(p.houses, function (x) {
       var li = el("li", null, (x.name || x.house_id) + (x.town ? " · " + x.town : "") + " · ");
       li.appendChild(window.TZ.stamp(x.first_seen_utc, { dateOnly: true }));
       return li;
     }));
-    frag.appendChild(h);
+    out.appendChild(h);
     var b = section("panel.bans");
     b.appendChild(list(p.bans, function (x) { return stampLine(x.banned_at_utc, x.reason + (x.gm ? " · " + x.gm : "")); }));
-    frag.appendChild(b);
+    out.appendChild(b);
     var d = section("panel.deaths");
     d.appendChild(list((p.deaths || []).slice(0, 15), function (x) {
       if (!x.killers || !x.killers.length) return stampLine(x.died_utc, x.raw);
@@ -138,11 +138,11 @@
       });
       return stampLine(x.died_utc, frag(parts));
     }));
-    frag.appendChild(d);
+    out.appendChild(d);
     var k = section("panel.kills");
     k.appendChild(list((p.kills || []).slice(0, 15), function (x) { return stampLine(x.died_utc, frag([charLink(x.victim), " (" + x.level + ")"])); }));
-    frag.appendChild(k);
-    return frag;
+    out.appendChild(k);
+    return out;
   }
 
   function evidenceList(evidence) {
