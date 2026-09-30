@@ -24,11 +24,11 @@
 
   function logout() {
     clear();
-    location.href = "login.html";
+    location.href = "index.html";
   }
 
   function require() {
-    if (!get()) location.replace("login.html");
+    /* painel publico: sem login (2026-09-29) */
   }
 
   window.AUTH = { get: get, save: save, clear: clear, logout: logout, require: require };

@@ -1,7 +1,6 @@
 // Orquestra a SPA: header (idioma + fuso + saude), roteamento por hash, filtros, clusters, timeline, mudancas e feed ao vivo.
 (function () {
   "use strict";
-  window.AUTH.require();
   var U = window.UI;
   var $ = function (sel) { return document.querySelector(sel); };
   var state = { graphData: null, view: "graph", filters: {} };
@@ -39,7 +38,6 @@
   }
 
   $("#tz-select").addEventListener("change", function (ev) { window.TZ.setTimezone(ev.target.value); });
-  $("#logout").addEventListener("click", function () { window.AUTH.logout(); });
   $("#theme-toggle").addEventListener("click", function () {
     window.THEME.toggle();
     if (graph) graph.applyTheme();
@@ -345,11 +343,9 @@
   detective = new window.VIEWS.Detective($("#view-detective"));
   guide = new window.VIEWS.Guide($("#view-help"));
   window.addEventListener("hashchange", route);
-  window.API.verify().then(function () {
-    route();
-    loadGraph();
-    pollHealth();
-    setInterval(pollHealth, window.SCANNER_CONFIG.HEALTH_EVERY_MS);
-    window.API.live(onLive);
-  }).catch(function () { window.AUTH.logout(); });
+  // Painel publico (sem login) e sem WebSocket: a API publica so atende leitura (2026-09-29).
+  route();
+  loadGraph();
+  pollHealth();
+  setInterval(pollHealth, window.SCANNER_CONFIG.HEALTH_EVERY_MS);
 })();
