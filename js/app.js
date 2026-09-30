@@ -4,7 +4,7 @@
   var U = window.UI;
   var $ = function (sel) { return document.querySelector(sel); };
   var state = { view: "investigation" };
-  var investigation, compare, guilds, lists, guide;
+  var investigation, compare, guilds, lists;
 
   // ------------------------------------------------------------------------------------------ header
   function buildLangSwitch() {
@@ -56,7 +56,6 @@
     if (state.view === "clusters") loadClusters();
     if (LISTS.indexOf(state.view) >= 0) lists.open(state.view);
     if (state.view === "guilds" && guilds.data && location.hash.indexOf("#guilds/") === 0) guilds.render();
-    if (state.view === "help") guide.render();
     renderHealth(state.health);
   });
 
@@ -138,7 +137,7 @@
 
   // ------------------------------------------------------------------------------------------ rotas
   var LISTS = ["highscores", "online", "powergamers", "insomniacs", "deaths", "bans"];
-  var VIEWS = ["investigation", "guilds", "compare", "clusters"].concat(LISTS, ["help"]);
+  var VIEWS = ["investigation", "guilds", "compare", "clusters"].concat(LISTS);
 
   function route() {
     var parts = (location.hash || "#investigation").slice(1).split("/").map(decodeURIComponent);
@@ -154,7 +153,6 @@
     if (LISTS.indexOf(view) >= 0) lists.open(view, parts[1]);
     if (view === "compare" && parts[1] && parts[2]) compare.open(parts[1], parts[2]);
     if (view === "clusters") loadClusters();
-    if (view === "help") guide.open(parseInt(parts[1] || "1", 10) - 1);
   }
 
   $("#inv-form").addEventListener("submit", function (ev) {
@@ -184,7 +182,6 @@
   compare = new window.VIEWS.Compare($("#view-compare"));
   guilds = new window.VIEWS.Guilds($("#view-guilds"));
   lists = new window.VIEWS.Lists();
-  guide = new window.VIEWS.Guide($("#view-help"));
   window.addEventListener("hashchange", route);
   // Painel publico (sem login) e sem WebSocket: a API publica so atende leitura (2026-09-29).
   route();
