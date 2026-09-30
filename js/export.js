@@ -15,7 +15,7 @@
 
   function png(graph, name) {
     var url = graph && graph.png();
-    if (url) download(url, "tibia-scanner-" + slug(name) + ".png");
+    if (url) download(url, "miracle-scanner-" + slug(name) + ".png");
   }
 
   // Remove emoji/simbolos fora do WinAnsi: a fonte padrao do jsPDF nao os desenha.
@@ -60,7 +60,7 @@
         var w = W - 80, h = Math.min(H - 120, w * props.height / props.width);
         doc.addImage(img, "PNG", 40, y, w, h);
       }
-      doc.save("tibia-scanner-" + slug(name) + ".pdf");
+      doc.save("miracle-scanner-" + slug(name) + ".pdf");
     });
   }
 
