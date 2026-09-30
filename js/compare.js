@@ -35,7 +35,9 @@
     var cols = U.el("div", "cmp-grid");
     [["a", "heatmap_a"], ["b", "heatmap_b"]].forEach(function (pair) {
       var card = U.el("section", "card");
-      card.appendChild(U.el("h3", "card-title", d[pair[0]].name));
+      var title = U.el("h3", "card-title");
+      title.appendChild(U.charLink(d[pair[0]].name));
+      card.appendChild(title);
       var box = U.el("div");
       card.appendChild(box);
       window.HEATMAP.render(box, d[pair[1]], { rgb: pair[0] === "a" ? null : "91, 155, 213" });
@@ -45,15 +47,19 @@
     var table = U.el("table", "diff");
     var head = U.el("tr");
     head.appendChild(U.i18nEl("th", null, "compare.field"));
-    head.appendChild(U.el("th", null, d.a.name));
-    head.appendChild(U.el("th", null, d.b.name));
+    [d.a, d.b].forEach(function (p) { var th = U.el("th"); th.appendChild(U.charLink(p.name)); head.appendChild(th); });
     head.appendChild(U.el("th"));
     table.appendChild(head);
     FIELDS.forEach(function (f) {
       var row = U.el("tr", d.diff[f].match ? "match" : "");
       row.appendChild(U.i18nEl("td", null, "field." + f));
-      row.appendChild(U.el("td", null, d.diff[f].a === null || d.diff[f].a === undefined ? "—" : d.diff[f].a));
-      row.appendChild(U.el("td", null, d.diff[f].b === null || d.diff[f].b === undefined ? "—" : d.diff[f].b));
+      ["a", "b"].forEach(function (k) {
+        var v = d.diff[f][k], td = U.el("td");
+        if (v === null || v === undefined || v === "") td.textContent = "—";
+        else if (f === "guild_name") td.appendChild(U.guildLink(v));
+        else td.textContent = v;
+        row.appendChild(td);
+      });
       row.appendChild(U.i18nEl("td", d.diff[f].match ? "ok" : "muted", d.diff[f].match ? "compare.match" : "compare.mismatch"));
       table.appendChild(row);
     });
@@ -61,7 +67,7 @@
     tcard.appendChild(table);
     out.appendChild(tcard);
     var common = U.section("compare.common_guilds");
-    common.appendChild(U.list(d.common_guilds, function (g) { return U.el("li", null, g); }));
+    common.appendChild(U.list(d.common_guilds, function (g) { var li = U.el("li"); li.appendChild(U.guildLink(g)); return li; }));
     out.appendChild(common);
     var ev = U.section("investigation.evidence");
     ev.appendChild(U.evidenceList(d.pair.evidence));

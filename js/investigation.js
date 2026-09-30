@@ -45,8 +45,28 @@
     var li = el("li", "stamp-line");
     if (icon) li.appendChild(window.ICONS.node(icon));
     li.appendChild(window.TZ.stamp(utc));
-    li.appendChild(document.createTextNode(" " + text));
+    li.appendChild(document.createTextNode(" "));
+    li.appendChild(text instanceof Node ? text : document.createTextNode(text));
     return li;
+  }
+
+  // Todo nome de personagem ou guilda leva ao perfil dele.
+  function charLink(name, text) {
+    var a = el("a", "name-link", text || name);
+    a.href = "#investigation/" + encodeURIComponent(name);
+    return a;
+  }
+
+  function guildLink(name, text) {
+    var a = el("a", "name-link", text || name);
+    a.href = "#guilds/" + encodeURIComponent(name);
+    return a;
+  }
+
+  function frag(parts) {
+    var f = document.createDocumentFragment();
+    parts.forEach(function (p) { f.appendChild(typeof p === "string" ? document.createTextNode(p) : p); });
+    return f;
   }
 
   // Recebe o par ({confidence, social, enemy, excluded}): cor e numero seguem a mesma regra das arestas do grafo.
@@ -61,13 +81,15 @@
   function profileCard(p, onTarget) {
     var card = section("panel.profile");
     var head = el("div", "profile-head");
-    head.appendChild(el("strong", "profile-name", p.name));
+    var pn = el("strong", "profile-name");
+    pn.appendChild(charLink(p.name));
+    head.appendChild(pn);
     head.appendChild(i18nEl("span", p.online ? "pill pill-on" : "pill", p.online ? "panel.online" : "panel.offline"));
     card.appendChild(head);
     card.appendChild(kv("panel.level", p.level));
     card.appendChild(kv("panel.vocation", p.vocation));
     card.appendChild(kv("panel.residence", p.residence));
-    card.appendChild(kv("panel.guild", p.guild_name ? p.guild_name + (p.guild_rank ? " (" + p.guild_rank + ")" : "") : ""));
+    card.appendChild(kv("panel.guild", p.guild_name ? frag([guildLink(p.guild_name), p.guild_rank ? " (" + p.guild_rank + ")" : ""]) : ""));
     card.appendChild(kv("panel.status", p.account_status));
     card.appendChild(kv("panel.last_login", window.TZ.stamp(p.last_login_utc)));
     card.appendChild(kv("panel.first_seen", window.TZ.stamp(p.first_seen_utc)));
@@ -85,7 +107,9 @@
     var g = section("panel.guilds");
     g.appendChild(list(p.guild_history, function (x) {
       var li = el("li");
-      li.appendChild(el("strong", null, x.guild || String(x.guild_id)));
+      var gname = el("strong");
+      gname.appendChild(x.guild ? guildLink(x.guild) : document.createTextNode(String(x.guild_id)));
+      li.appendChild(gname);
       li.appendChild(document.createTextNode(" " + (x.rank || "") + " · "));
       li.appendChild(window.TZ.stamp(x.first_seen_utc, { dateOnly: true }));
       li.appendChild(document.createTextNode(" → "));
@@ -105,10 +129,18 @@
     b.appendChild(list(p.bans, function (x) { return stampLine(x.banned_at_utc, x.reason + (x.gm ? " · " + x.gm : "")); }));
     frag.appendChild(b);
     var d = section("panel.deaths");
-    d.appendChild(list((p.deaths || []).slice(0, 15), function (x) { return stampLine(x.died_utc, x.raw); }));
+    d.appendChild(list((p.deaths || []).slice(0, 15), function (x) {
+      if (!x.killers || !x.killers.length) return stampLine(x.died_utc, x.raw);
+      var parts = ["Lv " + x.level + " · "];
+      x.killers.forEach(function (k, i) {
+        if (i) parts.push(", ");
+        parts.push(k.player ? charLink(k.name) : k.name);
+      });
+      return stampLine(x.died_utc, frag(parts));
+    }));
     frag.appendChild(d);
     var k = section("panel.kills");
-    k.appendChild(list((p.kills || []).slice(0, 15), function (x) { return stampLine(x.died_utc, x.victim + " (" + x.level + ")"); }));
+    k.appendChild(list((p.kills || []).slice(0, 15), function (x) { return stampLine(x.died_utc, frag([charLink(x.victim), " (" + x.level + ")"])); }));
     frag.appendChild(k);
     return frag;
   }
@@ -272,6 +304,6 @@
 
   window.VIEWS = window.VIEWS || {};
   window.VIEWS.Investigation = Investigation;
-  window.UI = { el: el, i18nEl: i18nEl, section: section, kv: kv, list: list, stampLine: stampLine, pctBadge: pctBadge,
+  window.UI = { el: el, i18nEl: i18nEl, section: section, kv: kv, list: list, stampLine: stampLine, charLink: charLink, guildLink: guildLink, frag: frag, pctBadge: pctBadge,
     profileCard: profileCard, historyCards: historyCards, evidenceList: evidenceList, sidePanel: sidePanel };
 })();

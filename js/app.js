@@ -4,7 +4,7 @@
   var U = window.UI;
   var $ = function (sel) { return document.querySelector(sel); };
   var state = { view: "investigation" };
-  var investigation, compare, guide;
+  var investigation, compare, guilds, guide;
 
   // ------------------------------------------------------------------------------------------ header
   function buildLangSwitch() {
@@ -54,6 +54,7 @@
     if (state.view === "investigation" && investigation.data) investigation.render();
     if (state.view === "compare" && compare.data) compare.open(compare.data.a.name, compare.data.b.name);
     if (state.view === "clusters") loadClusters();
+    if (state.view === "guilds" && guilds.data && location.hash.indexOf("#guilds/") === 0) guilds.render();
     if (state.view === "help") guide.render();
     renderHealth(state.health);
   });
@@ -128,7 +129,7 @@
   }
 
   // ------------------------------------------------------------------------------------------ rotas
-  var VIEWS = ["investigation", "compare", "clusters", "help"];
+  var VIEWS = ["investigation", "guilds", "compare", "clusters", "help"];
 
   function route() {
     var parts = (location.hash || "#investigation").slice(1).split("/").map(decodeURIComponent);
@@ -140,6 +141,7 @@
       if (nav) nav.classList.toggle("active", v === view);
     });
     if (view === "investigation" && parts[1]) { $("#inv-input").value = parts[1]; investigation.open(parts[1]); }
+    if (view === "guilds") { if (parts[1]) { $("#guild-input").value = parts[1]; guilds.open(parts[1]); } else guilds.list($("#guild-input").value.trim()); }
     if (view === "compare" && parts[1] && parts[2]) compare.open(parts[1], parts[2]);
     if (view === "clusters") loadClusters();
     if (view === "help") guide.open(parseInt(parts[1] || "1", 10) - 1);
@@ -148,6 +150,11 @@
   $("#inv-form").addEventListener("submit", function (ev) {
     ev.preventDefault();
     location.hash = "#investigation/" + encodeURIComponent($("#inv-input").value.trim());
+  });
+  $("#guild-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var q = $("#guild-input").value.trim();
+    if (location.hash === "#guilds") guilds.list(q); else location.hash = "#guilds";
   });
   $("#cmp-form").addEventListener("submit", function (ev) {
     ev.preventDefault();
@@ -165,6 +172,7 @@
   buildTzSelect();
   investigation = new window.VIEWS.Investigation($("#view-investigation"));
   compare = new window.VIEWS.Compare($("#view-compare"));
+  guilds = new window.VIEWS.Guilds($("#view-guilds"));
   guide = new window.VIEWS.Guide($("#view-help"));
   window.addEventListener("hashchange", route);
   // Painel publico (sem login) e sem WebSocket: a API publica so atende leitura (2026-09-29).

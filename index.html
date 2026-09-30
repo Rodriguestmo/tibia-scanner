@@ -49,6 +49,7 @@
   <nav class="sidebar" aria-label="nav">
     <div class="nav-section" data-i18n="nav.section.analysis"></div>
     <a class="nav-item" href="#investigation" data-nav="investigation"><span data-icon="investigation"></span><span data-i18n="nav.investigation"></span></a>
+    <a class="nav-item" href="#guilds" data-nav="guilds"><span data-icon="clusters"></span><span data-i18n="nav.guilds"></span></a>
     <a class="nav-item" href="#compare" data-nav="compare"><span data-icon="compare"></span><span data-i18n="nav.compare"></span></a>
     <a class="nav-item" href="#clusters" data-nav="clusters"><span data-icon="clusters"></span><span data-i18n="nav.clusters"></span></a>
     <div class="nav-section" data-i18n="nav.section.help"></div>
@@ -65,6 +66,15 @@
         <button id="export-pdf" class="btn" type="button"><span data-icon="file"></span><span data-i18n="export.pdf"></span></button>
       </form>
       <div id="inv-result"><p class="muted" data-i18n="investigation.empty"></p></div>
+    </section>
+
+    <!-- Guildas -->
+    <section id="view-guilds" hidden>
+      <form id="guild-form" class="search-bar">
+        <input id="guild-input" type="text" autocomplete="off" data-i18n-placeholder="guilds.search">
+        <button class="btn btn-primary" type="submit"><span data-icon="search"></span><span data-i18n="investigation.go"></span></button>
+      </form>
+      <div id="guild-result"></div>
     </section>
 
     <!-- Comparador -->
@@ -101,6 +111,7 @@
 <script src="js/graph.js" defer></script>
 <script src="js/investigation.js" defer></script>
 <script src="js/compare.js" defer></script>
+<script src="js/guilds.js" defer></script>
 <script src="js/export.js" defer></script>
 <script src="js/guide-content.js" defer></script>
 <script src="js/guide.js" defer></script>

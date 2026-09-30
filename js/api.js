@@ -54,6 +54,8 @@
     investigation: function (name) { return get("/investigation/" + enc(name), { lang: lang() }); },
     compare: function (a, b) { return get("/compare", { char_a: a, char_b: b, lang: lang() }); },
     report: function (name) { return get("/report/" + enc(name), { lang: lang() }); },
+    guilds: function (q) { return get("/guilds", { q: q }); },
+    guild: function (name) { return get("/guilds/" + enc(name)); },
     changes: function (hours) { return get("/changes", { hours: hours || 24 }); },
 
     // WebSocket com reconexao exponencial; handler recebe {type, data}.
