@@ -5,6 +5,6 @@
   window.SCANNER_CONFIG = {
     BACKEND_URL: (built.indexOf("__") === 0 ? "http://127.0.0.1:8000" : built).replace(/\/+$/, ""),
     DEFAULT_TIMEZONE: "America/Sao_Paulo",
-    HEALTH_EVERY_MS: 30000
+    HEALTH_EVERY_MS: 15000
   };
 })();

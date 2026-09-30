@@ -145,6 +145,64 @@
     return out;
   }
 
+  function duration(s) {
+    if (s === null || s === undefined) return "";
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h ? h + "h " + m + "m" : m + "m";
+  }
+
+  function smallTable(heads, rows) {
+    var t = el("table", "diff list-table");
+    var tr = el("tr");
+    heads.forEach(function (h) { tr.appendChild(i18nEl("th", null, h)); });
+    t.appendChild(tr);
+    rows.forEach(function (cells) {
+      var row = el("tr");
+      cells.forEach(function (c) {
+        var td = el("td");
+        if (c instanceof Node) td.appendChild(c); else td.textContent = c === null || c === undefined || c === "" ? "—" : c;
+        row.appendChild(td);
+      });
+      t.appendChild(row);
+    });
+    return t;
+  }
+
+  function card(key, body, empty) {
+    var c = section(key);
+    if (empty) c.appendChild(i18nEl("p", "muted", "panel.none")); else c.appendChild(body);
+    return c;
+  }
+
+  // Sessoes, tempo online, levels, skills e exp: montados pelo scanner (a pagina publica do site nao mostra isso).
+  function playerCards(pl) {
+    var out = document.createDocumentFragment();
+    out.appendChild(card("player.sessions", smallTable(["player.login", "player.logout", "player.duration"],
+      pl.sessions.map(function (s) {
+        return [window.TZ.stamp(s.login_utc), s.logout_utc ? window.TZ.stamp(s.logout_utc) : i18nEl("span", "ok", "panel.online"),
+          duration(s.duration_s)];
+      })), !pl.sessions.length));
+    out.appendChild(card("player.daily", smallTable(["player.day", "player.time"], pl.daily.map(function (d) {
+      return [d.day, duration(d.seconds)];
+    })), !pl.daily.length));
+    out.appendChild(card("player.levels", smallTable(["panel.level", "player.when"], pl.levels.map(function (l) {
+      return [l.level, window.TZ.stamp(l.changed_utc)];
+    })), !pl.levels.length));
+    var cats = Object.keys(pl.skills).filter(function (c) { return c !== "experience"; });
+    out.appendChild(card("player.skills", smallTable(["player.skill", "player.value", "player.history"], cats.map(function (c) {
+      var h = pl.skills[c];
+      return [t("skill." + c), h[0].value, h.slice(0, 8).map(function (x) {
+        return x.value + " (" + window.TZ.formatDateTime(x.seen_utc).split(" ")[0] + ")";
+      }).join(", ")];
+    })), !cats.length));
+    var exp = pl.skills.experience || [];
+    out.appendChild(card("player.exp", smallTable(["player.when", "player.value", "player.gain"], exp.slice(0, 14).map(function (x, i) {
+      var prev = exp[i + 1];
+      return [window.TZ.stamp(x.seen_utc), x.value.toLocaleString(), prev ? "+" + (x.value - prev.value).toLocaleString() : ""];
+    })), !exp.length));
+    return out;
+  }
+
   function evidenceList(evidence) {
     var wrap = el("div", "evidence");
     (evidence || []).forEach(function (e) {
@@ -224,6 +282,9 @@
     window.TIMELINE.renderSessions(tlBox, data.timeline.sessions);
     left.appendChild(tl);
     left.appendChild(historyCards(data.profile));
+    var pbox = el("div");
+    left.appendChild(pbox);
+    window.API.player(data.profile.name).then(function (pl) { pbox.appendChild(playerCards(pl)); }).catch(function () {});
     var right = el("div", "inv-col");
     var gcard = section("nav.graph");
     var gbox = el("div", "mini-graph");

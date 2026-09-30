@@ -367,3 +367,4 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
 .name-link:hover { border-bottom-style: solid; }
 .card:has(> .list-table) { overflow-x: auto; }
 .list-table td { white-space: nowrap; }
+.online-count { font-size: 12px; color: var(--accent); white-space: nowrap; text-decoration: none; }

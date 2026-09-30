@@ -86,6 +86,13 @@
       });
     }
     $("#health").title = tip.join("\n");
+    var total = null;
+    if (h && h.servers) Object.keys(h.servers).forEach(function (k) {
+      if (typeof h.servers[k].online === "number") total = (total || 0) + h.servers[k].online;
+    });
+    var oc = $("#online-count");
+    oc.hidden = total === null;
+    if (total !== null) oc.textContent = t("lists.online_count", { count: total });
   }
 
   function pollHealth() {
@@ -130,7 +137,7 @@
   }
 
   // ------------------------------------------------------------------------------------------ rotas
-  var LISTS = ["online", "powergamers", "insomniacs", "deaths", "bans"];
+  var LISTS = ["highscores", "online", "powergamers", "insomniacs", "deaths", "bans"];
   var VIEWS = ["investigation", "guilds", "compare", "clusters"].concat(LISTS, ["help"]);
 
   function route() {

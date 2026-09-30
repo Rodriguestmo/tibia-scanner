@@ -60,6 +60,8 @@
     rankings: function (kind, period) { return get("/rankings/" + kind, { period: period }); },
     deaths: function () { return get("/deaths"); },
     bans: function () { return get("/bans"); },
+    highscores: function (category, vocation) { return get("/highscores", { category: category, vocation: vocation }); },
+    player: function (name) { return get("/player/" + enc(name)); },
     changes: function (hours) { return get("/changes", { hours: hours || 24 }); },
 
     // WebSocket com reconexao exponencial; handler recebe {type, data}.
