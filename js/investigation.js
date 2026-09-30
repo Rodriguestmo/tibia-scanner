@@ -212,11 +212,6 @@
       sus.appendChild(item);
     });
     right.appendChild(sus);
-    var ex = section("investigation.excluded");
-    ex.appendChild(list(data.excluded, function (x) {
-      return stampLine(x.seen_together_utc, (x.a === data.profile.name ? x.b : x.a), "exclusion");
-    }));
-    right.appendChild(ex);
     grid.appendChild(left);
     grid.appendChild(right);
     out.appendChild(grid);

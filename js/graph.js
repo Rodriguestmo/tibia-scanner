@@ -73,10 +73,10 @@
     this.network = new vis.Network(container, { nodes: this.nodes, edges: this.edges }, {
       autoResize: true,
       interaction: { hover: !small(), tooltipDelay: 120, navigationButtons: false, keyboard: true, zoomSpeed: 0.5 },
-      physics: { solver: "forceAtlas2Based", stabilization: { iterations: 180 },
+      physics: { solver: "forceAtlas2Based", stabilization: { iterations: 120, updateInterval: 40 },
         forceAtlas2Based: { gravitationalConstant: -60, springLength: 120 } },
       nodes: { shape: "dot", size: 14, borderWidth: 2 },
-      edges: { smooth: { type: "continuous" }, selectionWidth: 2 }
+      edges: { smooth: false, selectionWidth: 2 }, layout: { improvedLayout: false }
     });
     this.applyTheme();
     var self = this;
