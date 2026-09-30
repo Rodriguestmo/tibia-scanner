@@ -38,8 +38,10 @@
         <option value="">Sem prazo</option>
       </select>
       <button class="btn btn-primary" type="submit">Adicionar</button>
+      <button id="notify" class="btn" type="button">Ativar notificações</button>
       <button id="logout" class="btn" type="button">Sair</button>
     </form>
+    <p id="updated" class="muted small"></p>
     <div class="card" id="out"></div>
   </div>
 </div>
@@ -55,6 +57,50 @@
     return utc ? new Date(utc).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit",
       hour: "2-digit", minute: "2-digit" }) : "—";
   }
+  // Notificacao + apito quando um alvo entra (ou sai). So avisa mudancas: na primeira leitura so guarda o estado.
+  var NKEY = "ms_targets_notify", seen = null, audio = null;
+  function notifyOn() { try { return localStorage.getItem(NKEY) === "1"; } catch (e) { return false; } }
+  function setNotify(on) { try { localStorage.setItem(NKEY, on ? "1" : "0"); } catch (e) {} paintNotify(); }
+  function paintNotify() {
+    var b = $("notify"), on = notifyOn() && window.Notification && Notification.permission === "granted";
+    b.textContent = on ? "Notificações ativas (desativar)" : "Ativar notificações";
+    b.className = on ? "btn btn-primary" : "btn";
+  }
+  function beep(up) {
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      [0, 0.18].forEach(function (d, i) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.frequency.value = up ? (i ? 1320 : 880) : (i ? 440 : 660);
+        g.gain.setValueAtTime(0.25, audio.currentTime + d);
+        g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d + 0.16);
+        o.connect(g); g.connect(audio.destination);
+        o.start(audio.currentTime + d); o.stop(audio.currentTime + d + 0.17);
+      });
+    } catch (e) {}
+  }
+  function alertChange(r, online) {
+    if (!notifyOn()) return;
+    beep(online);
+    var text = r.name + (online ? " entrou no jogo" : " saiu do jogo");
+    try {
+      if (window.Notification && Notification.permission === "granted") {
+        var n = new Notification(text, { body: [r.vocation, r.level ? "lvl " + r.level : ""].filter(Boolean).join(" - "),
+          tag: "ms-" + r.name, renotify: true });
+        n.onclick = function () { window.focus(); n.close(); };
+      }
+    } catch (e) {}
+    document.title = (online ? "● " : "○ ") + text;
+  }
+  function checkChanges(items) {
+    var now = {};
+    items.forEach(function (r) { now[r.name] = !!r.online_since; });
+    if (seen) items.forEach(function (r) {
+      if (r.name in seen && seen[r.name] !== now[r.name]) alertChange(r, now[r.name]);
+    });
+    seen = now;
+  }
+
   function show(logged) { $("login").hidden = logged; $("panel").hidden = !logged; }
   function authed(path, opts) {
     opts = opts || {};
@@ -72,6 +118,8 @@
   function load() {
     var out = $("out");
     authed("/admin/targets").then(function (d) {
+      checkChanges(d.items);
+      $("updated").textContent = "Atualizado " + new Date().toLocaleTimeString("pt-BR") + " (a cada 15 s)";
       out.innerHTML = "";
       if (!d.items.length) { out.appendChild(el("p", "Nenhum target.")); return; }
       var t = el("table"); t.className = "diff";
@@ -121,8 +169,23 @@
     if (!n) return;
     setTarget(n, true, parseFloat($("days").value) || null).then(function () { $("nick").value = ""; load(); });
   });
+  $("notify").addEventListener("click", function () {
+    if (notifyOn() && window.Notification && Notification.permission === "granted") { setNotify(false); return; }
+    if (!window.Notification) { alert("Este navegador não suporta notificações."); return; }
+    beep(true);  // o clique libera o som no navegador
+    Notification.requestPermission().then(function (p) {
+      if (p === "granted") {
+        setNotify(true);
+        new Notification("Notificações ativas", { body: "Você será avisado quando um target entrar ou sair." });
+      } else {
+        alert("Permissão negada. Libere as notificações deste site nas configurações do navegador.");
+      }
+    });
+  });
   $("logout").addEventListener("click", function () { setToken(null); show(false); });
-  setInterval(function () { if (token() && !$("panel").hidden) load(); }, 30000);
+  setInterval(function () { if (token() && !$("panel").hidden) load(); }, 15000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) document.title = "Miracle Scanner"; });
+  paintNotify();
 
   if (token()) { show(true); load(); } else show(false);
 })();
