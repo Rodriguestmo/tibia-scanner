@@ -1,6 +1,6 @@
-# Tibia Scanner - frontend
+# Miracle Scanner - frontend
 
-SPA estática em JS puro (sem framework nem build). Consome a API do Tibia Scanner.
+SPA estática em JS puro (sem framework nem build). Consome a API do Miracle Scanner.
 
 - `login.html` -> JWT em `localStorage`; `index.html` -> grafo, investigação, comparador, clusters, detetive,
   timeline e últimas 24h.
