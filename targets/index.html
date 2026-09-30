@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Miracle Scanner</title>
+  <link rel="stylesheet" href="../css/style.css?v=11">
+  <script src="../js/config.js?v=11"></script>
+  <style>
+    body { padding: 16px; }
+    .wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 16px; }
+    form.search-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    form.search-bar input { flex: 1; min-width: 160px; }
+    .card { overflow-x: auto; }
+    table.diff td { white-space: nowrap; }
+    .on { color: #5fbf77; font-weight: 600; }
+    .off { color: var(--muted); }
+    .x { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 16px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h2 class="view-title">Targets</h2>
+
+  <form id="login" class="search-bar card" hidden>
+    <input id="pw" type="password" placeholder="Senha" autocomplete="current-password" required>
+    <button class="btn btn-primary" type="submit">Entrar</button>
+    <p id="login-err" class="error" hidden></p>
+  </form>
+
+  <div id="panel" hidden>
+    <form id="add" class="search-bar">
+      <input id="nick" type="text" placeholder="Adicionar nick" autocomplete="off" required>
+      <select id="days">
+        <option value="7">7 dias</option>
+        <option value="30">30 dias</option>
+        <option value="">Sem prazo</option>
+      </select>
+      <button class="btn btn-primary" type="submit">Adicionar</button>
+      <button id="logout" class="btn" type="button">Sair</button>
+    </form>
+    <div class="card" id="out"></div>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var API = window.SCANNER_CONFIG.BACKEND_URL, KEY = "ms_admin_token";
+  var $ = function (id) { return document.getElementById(id); };
+  function token() { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } }
+  function setToken(t) { try { t ? sessionStorage.setItem(KEY, t) : sessionStorage.removeItem(KEY); } catch (e) {} }
+  function el(tag, text, cls) { var n = document.createElement(tag); if (text !== undefined) n.textContent = text; if (cls) n.className = cls; return n; }
+  function when(utc) {
+    return utc ? new Date(utc).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit",
+      hour: "2-digit", minute: "2-digit" }) : "—";
+  }
+  function show(logged) { $("login").hidden = logged; $("panel").hidden = !logged; }
+  function authed(path, opts) {
+    opts = opts || {};
+    opts.headers = Object.assign({ Authorization: "Bearer " + token() }, opts.headers || {});
+    return fetch(API + path, opts).then(function (r) {
+      if (r.status === 401) { setToken(null); show(false); throw new Error("Sessão expirada, entre de novo."); }
+      return r.json();
+    });
+  }
+  function setTarget(name, on, days) {
+    return authed("/characters/" + encodeURIComponent(name) + "/target", { method: "POST",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify({ target: on, days: days || null }) });
+  }
+
+  function load() {
+    var out = $("out");
+    authed("/admin/targets").then(function (d) {
+      out.innerHTML = "";
+      if (!d.items.length) { out.appendChild(el("p", "Nenhum target.")); return; }
+      var t = el("table"); t.className = "diff";
+      var h = el("tr");
+      ["Nick", "Vocação", "Lvl", "Status", "Último login", ""].forEach(function (x) { h.appendChild(el("th", x)); });
+      t.appendChild(h);
+      d.items.forEach(function (r) {
+        var tr = el("tr"), td = el("td"), a = el("a", r.name);
+        a.className = "name-link";
+        a.href = "../#investigation/" + encodeURIComponent(r.name);
+        td.appendChild(a);
+        tr.appendChild(td);
+        tr.appendChild(el("td", r.vocation || "—"));
+        tr.appendChild(el("td", r.level || "—"));
+        tr.appendChild(r.online_since ? el("td", "Online desde " + when(r.online_since), "on") : el("td", "Offline", "off"));
+        tr.appendChild(el("td", when(r.sessions.length ? r.sessions[0].login_utc : null)));
+        var rm = el("td"), b = el("button", "×", "x");
+        b.title = "Remover" + (r.target_until ? " (expira " + when(r.target_until) + ")" : "");
+        b.addEventListener("click", function () { if (confirm("Remover " + r.name + "?")) setTarget(r.name, false).then(load); });
+        rm.appendChild(b);
+        tr.appendChild(rm);
+        t.appendChild(tr);
+      });
+      out.appendChild(t);
+    }).catch(function (e) { out.innerHTML = ""; out.appendChild(el("p", e.message)); });
+  }
+
+  $("login").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var err = $("login-err");
+    err.hidden = true;
+    fetch(API + "/auth/login", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: $("pw").value }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error === "auth.rate_limited" ? "Muitas tentativas, espere um pouco." : "Senha incorreta.");
+        setToken(res.d.token);
+        $("pw").value = "";
+        show(true);
+        load();
+      })
+      .catch(function (e) { err.textContent = e.message; err.hidden = false; });
+  });
+  $("add").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var n = $("nick").value.trim();
+    if (!n) return;
+    setTarget(n, true, parseFloat($("days").value) || null).then(function () { $("nick").value = ""; load(); });
+  });
+  $("logout").addEventListener("click", function () { setToken(null); show(false); });
+  setInterval(function () { if (token() && !$("panel").hidden) load(); }, 30000);
+
+  if (token()) { show(true); load(); } else show(false);
+})();
+</script>
+</body>
+</html>

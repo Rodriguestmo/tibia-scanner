@@ -34,7 +34,7 @@ jobs:
             sed -i "s|__BACKEND_URL__|${BACKEND_URL%/}|" js/config.js
           fi
           mkdir -p _site
-          cp -r index.html login.html lastscan css js assets _site/
+          cp -r index.html login.html lastscan targets css js assets _site/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
