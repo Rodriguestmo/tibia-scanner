@@ -56,6 +56,10 @@
     report: function (name) { return get("/report/" + enc(name), { lang: lang() }); },
     guilds: function (q) { return get("/guilds", { q: q }); },
     guild: function (name) { return get("/guilds/" + enc(name)); },
+    online: function () { return get("/online"); },
+    rankings: function (kind, period) { return get("/rankings/" + kind, { period: period }); },
+    deaths: function () { return get("/deaths"); },
+    bans: function () { return get("/bans"); },
     changes: function (hours) { return get("/changes", { hours: hours || 24 }); },
 
     // WebSocket com reconexao exponencial; handler recebe {type, data}.

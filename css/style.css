@@ -365,3 +365,5 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
 }
 .name-link { color: var(--accent, inherit); text-decoration: none; border-bottom: 1px dotted currentColor; }
 .name-link:hover { border-bottom-style: solid; }
+.card:has(> .list-table) { overflow-x: auto; }
+.list-table td { white-space: nowrap; }
