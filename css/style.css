@@ -1,32 +1,36 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
-/* Identidade "masmorra" (2026-10-01): ardosia azulada do piso e da moldura, pedra quente nos paineis, pergaminho no
-   texto, ouro de tocha no destaque. Pixel art: sem cantos arredondados, bordas grossas e sombra em degrau. */
+/* Visual do client antigo do Tibia 7.4 (2026-10-02): pedra cinza, janelas com barra de titulo e relevo 3D (claro em
+   cima/esquerda, escuro embaixo/direita), botoes cinza chanfrados, fonte Verdana/Tahoma pequena e titulos em negrito
+   com contorno preto como os nomes acima dos personagens. Tema claro = pergaminho. */
 :root,
 :root[data-theme="dark"] {
-  --bg: #13151c;
-  --bg-2: #1a1d26;
-  --sidebar: #181a22;
-  --surface: #221d19;
-  --surface-2: #2c251f;
-  --surface-3: #3a3028;
-  --border: #3e3329;
-  --border-strong: #6b5640;
-  --frame: #2a3142;
-  --text: #f3e2c0;
-  --text-2: #dcc8a2;
-  --muted: #a08c6c;
-  --accent: #f2c260;
-  --accent-strong: #ffd98a;
-  --accent-ink: #1a1210;
+  --bg: #2b2b2b;
+  --bg-2: #222222;
+  --sidebar: #333333;
+  --surface: #3c3c3c;
+  --surface-2: #474747;
+  --surface-3: #555555;
+  --border: #1a1a1a;
+  --border-strong: #141414;
+  --bevel-light: #7d7d7d;
+  --bevel-dark: #121212;
+  --frame: #4a4a4a;
+  --title-bar: #252525;
+  --text: #dcdcdc;
+  --text-2: #c0c0c0;
+  --muted: #8f8f8f;
+  --accent: #f0c850;
+  --accent-strong: #ffe08a;
+  --accent-ink: #1a1408;
   --torch: #ff9a3c;
-  --ok: #7bc96f;
-  --warn: #f2c260;
-  --bad: #e0564f;
-  --info: #7fb2e5;
+  --ok: #3ccf3c;
+  --warn: #f0c850;
+  --bad: #ef3b3b;
+  --info: #6aa8ff;
   --enemy: #ff8a3d;
-  --shadow: 4px 4px 0 rgba(0, 0, 0, 0.55);
-  --heat: 242, 194, 96;
+  --shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+  --heat: 240, 200, 80;
   color-scheme: dark;
 }
 
@@ -41,6 +45,9 @@
   --border: #c2a575;
   --border-strong: #8b6a3e;
   --frame: #6b5640;
+  --bevel-light: #fff8e6;
+  --bevel-dark: #8b6a3e;
+  --title-bar: #cdb383;
   --text: #2f2114;
   --text-2: #4a3622;
   --muted: #7d6446;
@@ -63,7 +70,7 @@ html, body { margin: 0; height: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.45 "Pixelify Sans", "IBM Plex Mono", Menlo, monospace;
+  font: 13px/1.45 Verdana, Tahoma, "DejaVu Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: opacity 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
@@ -203,7 +210,7 @@ time { color: var(--text-2); font-variant-numeric: tabular-nums; }
 .mini-graph { position: relative; height: 320px; }
 div.vis-tooltip, .vis-tip {
   background: var(--surface-2) !important; color: var(--text) !important; border: 1px solid var(--border-strong) !important;
-  border-radius: 0 !important; font: 14px/1.4 "Pixelify Sans", Menlo, monospace !important; padding: 8px 10px !important;
+  border-radius: 0 !important; font: 12px/1.4 Verdana, Tahoma, sans-serif !important; padding: 8px 10px !important;
   box-shadow: var(--shadow); white-space: normal !important; max-width: 320px;
 }
 .vis-tip-row { display: flex; align-items: center; gap: 6px; color: var(--text-2); }
@@ -378,79 +385,95 @@ details.advanced summary { color: var(--muted); cursor: pointer; font-size: 11px
 .online-count { font-size: 12px; color: var(--accent); white-space: nowrap; text-decoration: none; }
 
 
-/* ================================================================ pele pixel art */
+/* ================================================================ pele do client Tibia 7.4 */
 body {
   background-color: var(--bg);
-  /* ladrilhos de pedra bem sutis, como o piso da masmorra */
+  /* pedra granulada do fundo do client */
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.18) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.18) 2px, transparent 2px);
-  background-size: 64px 32px, 64px 32px;
-  background-position: 0 0, 32px 16px;
+    radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    radial-gradient(rgba(0, 0, 0, 0.25) 1px, transparent 1px);
+  background-size: 6px 6px, 9px 9px;
+  background-position: 0 0, 3px 4px;
 }
-.brand-title, .view-title, .card-title, .nav-section, .field-label, .profile-name, .panel-head h2,
-.guide-title, table.diff th, .pixel {
-  font-family: "Press Start 2P", "Pixelify Sans", monospace;
-  letter-spacing: 0;
+/* texto com contorno preto, como nomes e mensagens dentro do jogo */
+.outlined, .brand-title, .view-title, .profile-name, .hero-title, .panel-head h2, .guide-title {
+  font-family: Verdana, Tahoma, sans-serif; font-weight: 700; letter-spacing: 0;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 2px 2px 0 rgba(0, 0, 0, 0.6);
 }
-.brand-title { font-size: 12px; color: var(--accent); text-shadow: 2px 2px 0 #000; }
-.brand-sub { font-family: "Pixelify Sans", monospace; letter-spacing: 0.06em; }
-.view-title { font-size: 14px; line-height: 1.5; color: var(--accent); text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6); }
-.card-title { font-size: 9px; color: var(--accent); line-height: 1.6; }
-.nav-section { font-size: 8px; color: var(--muted); padding-top: 14px; }
-.field-label { font-size: 8px; }
-.profile-name { font-size: 13px; }
-table.diff th { font-size: 8px; }
+.brand-title { font-size: 15px; color: var(--accent); }
+.brand-sub { letter-spacing: 0.04em; }
+.view-title { font-size: 16px; color: var(--accent); }
+.profile-name { font-size: 15px; }
+.nav-section, .field-label { font-family: Verdana, Tahoma, sans-serif; font-weight: 700; font-size: 10px; letter-spacing: 0.08em; }
 .logo-px { width: 30px; height: 30px; image-rendering: pixelated; flex: none; filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.6)); }
 
+/* relevo 3D do client */
+.bevel, .card, .graph-wrap, .login-card, .toast, .side-panel, .lang-switch, .graph-stats, .nav-item.active, .evidence-item {
+  border: 2px solid; border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
+}
 .topbar {
   background: var(--sidebar);
-  border-bottom: 4px solid var(--frame);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  border-bottom: 2px solid var(--bevel-dark);
+  box-shadow: inset 0 -2px 0 var(--bevel-light), 0 2px 0 #000;
 }
-.sidebar { border-right: 4px solid var(--frame); }
-.nav-item { border: 2px solid transparent; font-size: 15px; }
-.nav-item:hover { background: var(--surface); border-color: var(--border); }
-.nav-item.active {
-  background: var(--surface-2); color: var(--accent);
-  border: 2px solid var(--border-strong); border-left: 4px solid var(--accent);
-  box-shadow: inset 2px 2px 0 rgba(255, 255, 255, 0.05), 2px 2px 0 rgba(0, 0, 0, 0.4);
-}
+.sidebar { border-right: 2px solid var(--bevel-dark); box-shadow: inset -2px 0 0 var(--bevel-light); }
 
-.card, .graph-wrap, .evidence-item, .login-card, .toast, .side-panel, .lang-switch, .graph-stats {
-  border: 2px solid var(--border-strong);
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.25), var(--shadow);
+/* janela do client: barra de titulo escura com texto claro centralizado */
+.card { background: var(--surface); padding: 0 12px 12px; box-shadow: var(--shadow); }
+.card-title {
+  margin: 0 -12px 10px; padding: 4px 10px; text-align: center;
+  background: var(--title-bar); color: var(--text-2);
+  font: 700 11px/1.4 Verdana, Tahoma, sans-serif; letter-spacing: 0.04em; text-transform: none;
+  border-bottom: 2px solid var(--bevel-dark); text-shadow: 1px 1px 0 #000;
 }
-.card { background: var(--surface); }
-.evidence-item { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+.card > :first-child:not(.card-title) { margin-top: 12px; }
 
+.nav-item { border: 2px solid transparent; font-size: 13px; }
+.nav-item:hover { background: var(--surface); }
+.nav-item.active { background: var(--surface-2); color: var(--accent); box-shadow: none; }
+
+/* botao chanfrado do client */
 .btn {
-  border: 2px solid #000;
-  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.35), inset 2px 2px 0 rgba(255, 255, 255, 0.12), 2px 2px 0 rgba(0, 0, 0, 0.5);
-  font-family: "Pixelify Sans", monospace; font-size: 15px;
+  min-height: 34px; padding: 0 14px;
+  background: var(--surface-2); color: var(--text);
+  border: 2px solid; border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light);
+  box-shadow: 1px 1px 0 #000;
+  font: 700 12px/1 Verdana, Tahoma, sans-serif; text-shadow: 1px 1px 0 #000;
 }
-.btn:active { transform: translate(2px, 2px); box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.35); }
-.btn-primary { background: var(--accent); color: var(--accent-ink); border-color: #000; font-weight: 700; }
-.btn-primary:hover { background: var(--accent-strong); }
-.btn-ghost { box-shadow: none; border-color: transparent; }
+.btn:hover { background: var(--surface-3); color: #fff; }
+.btn:active { border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark); transform: translate(1px, 1px); box-shadow: none; }
+.btn-primary { background: #5d4a1c; color: var(--accent-strong); }
+.btn-primary:hover { background: #75602a; color: #fff3c4; }
+.btn-ghost { background: transparent; border-color: transparent; box-shadow: none; }
+:root[data-theme="light"] .btn { text-shadow: none; }
+:root[data-theme="light"] .btn-primary { background: var(--accent); color: var(--accent-ink); }
+
+/* campo de texto afundado */
 input[type="text"], input[type="password"], input[type="url"], select {
-  background: var(--bg-2); border: 2px solid var(--border-strong);
-  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.35);
-  font-family: "Pixelify Sans", monospace; font-size: 15px;
+  min-height: 34px; background: var(--bg-2); color: var(--text);
+  border: 2px solid; border-color: var(--bevel-dark) var(--bevel-light) var(--bevel-light) var(--bevel-dark);
+  font: 13px Verdana, Tahoma, sans-serif;
 }
-input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.badge { border: 2px solid #000; color: #1a1210; font-family: "Press Start 2P", monospace; font-size: 8px; padding: 4px 6px; }
-.pill { border: 2px solid var(--border-strong); }
-.dot { border-radius: 0; width: 10px; height: 10px; border: 2px solid #000; }
-.dot.ok { box-shadow: 0 0 8px var(--ok); }
+input:focus, select:focus, .btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+/* barra de busca: campo e botoes com a mesma altura */
+.search-bar { align-items: stretch; flex-wrap: wrap; }
+.search-bar input, .search-bar .btn, .search-bar select { height: 36px; min-height: 36px; }
+.search-bar .btn { padding: 0 14px; }
+
+.badge { border: 1px solid #000; color: #111; font: 700 11px/1.3 Verdana, Tahoma, sans-serif; padding: 2px 6px; }
+.pill { border: 1px solid var(--bevel-dark); }
+.dot { border-radius: 0; width: 9px; height: 9px; border: 1px solid #000; }
+.dot.ok { box-shadow: 0 0 6px var(--ok); }
 .heatmap-cell { border-radius: 0; }
 .session-bar { background: linear-gradient(var(--accent-strong), var(--torch)); }
-.name-link { border-bottom: 2px dotted currentColor; }
-.online-count { font-family: "Press Start 2P", monospace; font-size: 9px; }
+.name-link { border-bottom: 1px dotted currentColor; }
+.online-count { font: 700 12px Verdana, Tahoma, sans-serif; color: var(--ok); text-shadow: 1px 1px 0 #000; }
+table.diff th { font: 700 10px Verdana, Tahoma, sans-serif; letter-spacing: 0.06em; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
-::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar { width: 14px; height: 14px; }
 ::-webkit-scrollbar-track { background: var(--bg-2); }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border: 2px solid var(--bg-2); }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border: 2px solid; border-color: var(--bevel-light) var(--bevel-dark) var(--bevel-dark) var(--bevel-light); }
 
 /* ================================================================ Investigation: pagina inicial (estilo Google) */
 .inv-hero { display: none; }
@@ -459,7 +482,7 @@ input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent)
   min-height: calc(100vh - 56px); margin: -18px; padding: 32px 16px;
   /* detetive a esquerda, sumindo na pedra da masmorra; a busca fica no centro */
   background:
-    linear-gradient(90deg, rgba(19, 21, 28, 0.35) 0%, rgba(19, 21, 28, 0.75) 35%, var(--bg) 62%),
+    linear-gradient(90deg, rgba(43, 43, 43, 0.3) 0%, rgba(43, 43, 43, 0.75) 35%, var(--bg) 62%),
     url("../assets/hero.jpg") left center / auto 100% no-repeat,
     var(--bg);
   image-rendering: pixelated;
@@ -476,7 +499,7 @@ input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent)
   animation: hero-bob 3s steps(4) infinite; }
 .hero-title {
   margin: 0; font-family: "Press Start 2P", monospace; font-size: clamp(20px, 5vw, 40px); line-height: 1.25;
-  color: #f7dfae; text-shadow: 4px 4px 0 #3a2410, 0 0 24px rgba(255, 154, 60, 0.35);
+  color: #f7dfae; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 4px 4px 0 #3a2410;
 }
 :root[data-theme="light"] .hero-title { color: var(--accent-strong); text-shadow: 3px 3px 0 #f4e8cb; }
 .hero-sub { margin: 0; font-family: "Press Start 2P", monospace; font-size: clamp(9px, 2vw, 14px); color: #d9d9d9;
@@ -485,11 +508,11 @@ input:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent)
 .hero-form { display: flex; width: 100%; margin-top: 10px; box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.6); }
 .hero-form input[type="text"] {
   flex: 1; min-height: 58px; padding: 0 18px; font-size: 20px;
-  background: #f4e8cb; color: #2f2114; border: 4px solid #000; border-right: 0;
-  box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.18);
+  height: 58px; background: #f4e8cb; color: #2f2114; border: 3px solid #000; border-right: 0;
+  box-shadow: inset 3px 3px 0 rgba(0, 0, 0, 0.18); font: 18px Verdana, Tahoma, sans-serif;
 }
 .hero-form input::placeholder { color: #8a7352; }
-.hero-form .btn { min-height: 58px; padding: 0 20px; border-width: 4px; font-family: "Press Start 2P", monospace; font-size: 11px; }
+.hero-form .btn { height: 58px; min-height: 58px; padding: 0 22px; font-size: 14px; }
 .hero-hint { color: #cdbb98; font-size: 14px; text-shadow: 1px 1px 0 #000; }
 :root[data-theme="light"] .hero-hint { color: var(--muted); text-shadow: none; }
 .hero-hint a { color: var(--accent-strong); }
