@@ -305,6 +305,22 @@
       sus.appendChild(item);
     });
     right.appendChild(sus);
+    if (data.friends && data.friends.length) {
+      var fri = section("investigation.friends", { count: data.friends.length });
+      data.friends.forEach(function (f) {
+        var item = el("div", "suspect");
+        var head = el("div", "suspect-head");
+        head.appendChild(pctBadge(f));
+        var link = el("a", "suspect-name", f.other);
+        link.href = "#investigation/" + encodeURIComponent(f.other);
+        head.appendChild(link);
+        item.appendChild(head);
+        item.appendChild(el("p", "detective-text", f.detective.conclusion));
+        item.appendChild(evidenceList(f.evidence));
+        fri.appendChild(item);
+      });
+      right.appendChild(fri);
+    }
     grid.appendChild(left);
     grid.appendChild(right);
     out.appendChild(grid);

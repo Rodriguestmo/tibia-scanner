@@ -148,6 +148,9 @@
       var nav = document.querySelector('[data-nav="' + v + '"]');
       if (nav) nav.classList.toggle("active", v === view);
     });
+    // sem nome: pagina inicial com a busca no centro; com nome: relatorio com a busca compacta no topo
+    $("#view-investigation").classList.toggle("home", view === "investigation" && !parts[1]);
+    if (view === "investigation" && !parts[1]) { heroHint(); setTimeout(function () { $("#hero-input").focus(); }, 0); }
     if (view === "investigation" && parts[1]) { $("#inv-input").value = parts[1]; investigation.open(parts[1]); }
     if (view === "guilds") { if (parts[1]) { $("#guild-input").value = parts[1]; guilds.open(parts[1]); } else guilds.list($("#guild-input").value.trim()); }
     if (LISTS.indexOf(view) >= 0) lists.open(view, parts[1]);
@@ -164,6 +167,35 @@
     var q = $("#guild-input").value.trim();
     if (location.hash === "#guilds") guilds.list(q); else location.hash = "#guilds";
   });
+  $("#hero-form").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var name = $("#hero-input").value.trim();
+    if (name) location.hash = "#investigation/" + encodeURIComponent(name);
+  });
+
+  // Sugestoes na pagina inicial: 3 nomes de quem esta online agora (a lista fica no cache de 60 s da API).
+  var hintLoaded = false;
+  function heroHint() {
+    if (hintLoaded) return;
+    hintLoaded = true;
+    window.API.online().then(function (res) {
+      var pool = res.items.filter(function (r) { return r.level >= 30; });
+      if (pool.length < 3) pool = res.items;
+      var pick = [];
+      while (pick.length < 3 && pool.length) pick.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0].name);
+      var box = $("#hero-hint");
+      box.innerHTML = "";
+      if (!pick.length) return;
+      box.appendChild(U.i18nEl("span", null, "hero.try"));
+      pick.forEach(function (n, i) {
+        box.appendChild(document.createTextNode(i ? " · " : " "));
+        var a = U.el("a", null, n);
+        a.href = "#investigation/" + encodeURIComponent(n);
+        box.appendChild(a);
+      });
+    }).catch(function () { hintLoaded = false; });
+  }
+
   $("#cmp-form").addEventListener("submit", function (ev) {
     ev.preventDefault();
     location.hash = "#compare/" + encodeURIComponent($("#cmp-a").value.trim()) + "/" + encodeURIComponent($("#cmp-b").value.trim());
